@@ -2,8 +2,8 @@ import React from "react";
 
 //👇🏻 app screens
 import Login from "../screens/Login";
-// import Messaging from "../screens/Messaging";
-// import Chat from "../screens/Chat";
+import Chat from "../screens/Chat";
+import Messaging from "../screens/Messaging";
 
 //👇🏻 React Navigation configurations
 import { NavigationContainer } from "@react-navigation/native";
@@ -21,7 +21,7 @@ export default function App() {
                     options={{ headerShown: false }}
                 />
 
-                {/* <Stack.Screen
+                <Stack.Screen
                     name='Chat'
                     component={Chat}
                     options={{
@@ -29,7 +29,7 @@ export default function App() {
                         headerShown: false,
                     }}
                 />
-                <Stack.Screen name='Messaging' component={Messaging} /> */}
+                <Stack.Screen name='Messaging' component={Messaging} />
             </Stack.Navigator>
         </NavigationContainer>
     );
