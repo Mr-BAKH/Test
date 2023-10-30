@@ -17,22 +17,16 @@ const ChatComponent = ({ item }) => {
     const handleNavigation = () => {
         navigation.navigate("Messaging", {
             id: item.id,
-            name: item.name,
+            name: item.roomName,
         });
     };
 
     return (
         <Pressable style={styles.cchat} onPress={handleNavigation}>
-            {/* <Ionicons
-                name='person-circle-outline'
-                size={45}
-                color='black'
-                style={styles.cavatar}
-            /> */}
-
+            
             <View style={styles.crightContainer}>
                 <View>
-                    <Text style={styles.cusername}>{item.name}</Text>
+                    <Text style={styles.cusername}>{item.roomName}</Text>
 
                     <Text style={styles.cmessage}>
                         {messages?.text ? messages.text : "Tap to start chatting"}

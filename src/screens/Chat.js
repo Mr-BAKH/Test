@@ -17,7 +17,7 @@ const Chat = () => {
 //👇🏻 Runs when the component mounts
 useLayoutEffect(() => {
     function fetchGroups() {
-        fetch("http://localhost:4000/api")
+        fetch("http://192.168.77.100:4000/api")
             .then((res) => res.json())
             .then((data) => setRooms(data))
             .catch((err) => console.error(err));
@@ -29,6 +29,7 @@ useLayoutEffect(() => {
 useEffect(() => {
     socket.on("roomsList", (rooms) => {
         setRooms(rooms);
+        // console.log(rooms)
     });
 }, [socket]);
 
