@@ -16,16 +16,16 @@ import { styles } from "../utils/styles";
 const Login = ({ navigation }) => {
     const [username, setUsername] = useState("");
 
-    const storeUsername = async () => {
-      try {
-          //👇🏻 async function - saves the username to AsyncStorage
-          //   redirecting to the Chat page
-          await AsyncStorage.setItem("username", username);
-          navigation.navigate("Chat");
-      } catch (e) {
-          Alert.alert("Error! While saving username");
-      }
-  };
+//     const storeUsername = async () => {
+//       try {
+//           //👇🏻 async function - saves the username to AsyncStorage
+//           //   redirecting to the Chat page
+//           await AsyncStorage.setItem("username", username);
+//           navigation.navigate("Chat");
+//       } catch (e) {
+//           Alert.alert("Error! While saving username");
+//       }
+//   };
 
     //👇🏻 checks if the input field is empty
     const handleSignIn = () => {

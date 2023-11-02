@@ -1,4 +1,4 @@
-import React,{useState, useEffect,useLayoutEffect} from "react";
+import React,{useState, useEffect,useLayoutEffect, useMemo} from "react";
 import { View, Text, Pressable, SafeAreaView, FlatList } from "react-native";
 import socket from "../utils/socket";
 
@@ -7,31 +7,55 @@ import Modal from "../components/Modal";
 import ChatComponent from "../components/ChatComponent";
 import { styles } from "../utils/styles";
 
+//set socket valu for know about the chage in socket
+
+
+socket.on("roomsList", async(data) => {
+    let trust = await data;
+    if(trust){
+        console.log('from socket! >>>>> ',data)
+        return data;
+    }else{
+        console.log('data did not find!')
+        return null;
+    }
+});
+
 const Chat = () => {
+
 
     const [visible, setVisible] = React.useState(false); //default false
     //👇🏻 Dummy list of rooms
   
     const [rooms, setRooms] = useState([]);
+    
+    let socketRead = socket;
+    useMemo(()=>{
+        socket.on("roomsList", async(data) => {
+            let trust = await data;
+            if(trust){
+                console.log('from socket! >>>>> ',data)
+                setRooms(data)
+            }else{
+                console.log('data did not find!')
+                return null;
+            }
+        });
+    },[socketRead])
 
 //👇🏻 Runs when the component mounts
 useLayoutEffect(() => {
+    const ip = '192.168.77.100' //
     function fetchGroups() {
-        fetch("http://192.168.77.100:4000/api")
+        fetch(`http:///${ip}:4000/api`)
             .then((res) => res.json())
-            .then((data) => setRooms(data))
+            .then((data) => {setRooms(data)})
             .catch((err) => console.error(err));
     }
     fetchGroups();
+    console.log('get data from server!<<<<<')
 }, []);
 
-//👇🏻 Runs whenever there is new trigger from the backend
-useEffect(() => {
-    socket.on("roomsList", (rooms) => {
-        setRooms(rooms);
-        // console.log(rooms)
-    });
-}, [socket]);
 
     return (
         <SafeAreaView style={styles.chatscreen}>

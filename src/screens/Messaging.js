@@ -6,20 +6,10 @@ import MessageComponent from "../components/MessageComponent";
 import { styles } from "../utils/styles";
 
 const Messaging = ({ route, navigation }) => {
-    const [chatMessages, setChatMessages] = useState([
-        {
-            id: "1",
-            text: "Hello guys, welcome!",
-            time: "07:50",
-            user: "Tomer",
-        },
-        {
-            id: "2",
-            text: "Hi Tomer, thank you! 😇",
-            time: "08:50",
-            user: "David",
-        },
-    ]);
+
+    var lesonSocket = socket; // lesson to socket;
+
+    const [chatMessages, setChatMessages] = useState([]);
     const [message, setMessage] = useState("");
     const [user, setUser] = useState("");
 
@@ -27,16 +17,16 @@ const Messaging = ({ route, navigation }) => {
     const { name, id } = route.params;
 
 //👇🏻 This function gets the username saved on AsyncStorage
-    const getUsername = async () => {
-        try {
-            const value = await AsyncStorage.getItem("username");
-            if (value !== null) {
-                setUser(value);
-            }
-        } catch (e) {
-            console.error("Error while loading username!");
-        }
-    };
+    // const getUsername = async () => {
+    //     try {
+    //         const value = await AsyncStorage.getItem("username");
+    //         if (value !== null) {
+    //             setUser(value);
+    //         }
+    //     } catch (e) {
+    //         console.error("Error while loading username!");
+    //     }
+    // };
 
     //👇🏻 This runs only initial mount
 useLayoutEffect(() => {
@@ -47,14 +37,18 @@ useLayoutEffect(() => {
 
 //👇🏻 This runs when the messages are updated.
 useEffect(() => {
-    socket.on("foundRoom", (roomChats) => setChatMessages(roomChats));
-}, [socket])
+    socket.on("foundRoom", (roomChats) => {
+        setChatMessages(roomChats);
+        console.log(roomChats)
+    });
+}, [lesonSocket])
 
     /*👇🏻 
         This function gets the time the user sends a message, then 
         logs the username, message, and the timestamp to the console.
      */
     const handleNewMessage = () => {
+        setMessage(''); // clear message box
         const hour =
             new Date().getHours() < 10
                 ? `0${new Date().getHours()}`
@@ -98,6 +92,7 @@ useEffect(() => {
                 <TextInput
                     style={styles.messaginginput}
                     onChangeText={(value) => setMessage(value)}
+                    value={message}
                 />
                 <Pressable
                     style={styles.messagingbuttonContainer}
