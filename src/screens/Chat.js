@@ -61,7 +61,9 @@ useLayoutEffect(() => {
         <SafeAreaView style={styles.chatscreen}>
             <View style={styles.chattopContainer}>
                 <View style={styles.chatheader}>
-                    <Text style={styles.chatheading}>Chats</Text>
+                    <Text
+                        className='text-red-500 text-xl'
+                    >Chats</Text>
 
             {/* 👇🏻 Logs "ButtonPressed" to the console when the icon is clicked */}
                     <Pressable onPress={() => setVisible(true)}>

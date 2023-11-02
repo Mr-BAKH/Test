@@ -1,5 +1,7 @@
 import React, { useLayoutEffect, useState, useEffect } from "react";
 import { View, TextInput, Text, FlatList, Pressable } from "react-native";
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import {faPaperPlane,faCamera,faMicrophoneLines} from '@fortawesome/free-solid-svg-icons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import socket from "../utils/socket";
 import MessageComponent from "../components/MessageComponent";
@@ -88,23 +90,38 @@ useEffect(() => {
                 )}
             </View>
 
-            <View style={styles.messaginginputContainer}>
+            <View
+                className='flex-row w-full justify-center items-center px-[15px] backdrop-blur-sm mb-[40px]'
+            >
                 <TextInput
-                    style={styles.messaginginput}
+                    className="flex-grow"
+                    placeholder="write..."
                     onChangeText={(value) => setMessage(value)}
                     value={message}
                 />
-                <Pressable
-                    style={styles.messagingbuttonContainer}
-                    onPress={handleNewMessage}
+                <View
+                    style={{gap:10}}
+                    className='flex-row'
                 >
-                    <View>
-                        <Text style={{ color: "#f2f0f1", fontSize: 20 }}>SEND</Text>
-                    </View>
-                </Pressable>
+                    <Botton icon={faCamera} color={'gray'} func={()=>console.log('useCamera!')}/>
+                    <Botton icon={faMicrophoneLines} color={'gray'} func={()=>console.log('useMicrophone!')}/>
+                    <Botton icon={faPaperPlane} color={'darkblue'} func={handleNewMessage}/>
+                </View>
             </View>
         </View>
     );
 };
 
 export default Messaging;
+
+
+const Botton = ({icon,func,color})=>{
+    return(
+        <Pressable
+            onPress={func}
+            className="p-[8px] rounded-full"
+        >
+            <FontAwesomeIcon icon={icon} size={20} color={color}/>
+        </Pressable>
+    )
+}
