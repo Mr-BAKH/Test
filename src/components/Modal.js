@@ -1,6 +1,7 @@
 import { View, Text, TextInput, Pressable } from "react-native";
 import React, { useState } from "react";
 import { styles } from "../utils/styles";
+import {Text_Botton} from "./Botton"
 
 //👇🏻 Import socket from the socket.js file in utils folder
 import socket from "../utils/socket";
@@ -18,24 +19,23 @@ const Modal = ({ setVisible }) => {
         closeModal();
     };
     return (
-        <View style={styles.modalContainer}>
+        <View
+            className='w-screen h-fit bottom-0 rounded-t-[50px] bg-purple-300 absolute z-10 py-[50] px-[20px]'
+        >
+            
             <Text style={styles.modalsubheading}>Enter your Group name</Text>
             <TextInput
-                style={styles.modalinput}
-                placeholder='Group name'
+                className='p-6 bg-white rounded-full'
+                placeholder='Name...'
                 onChangeText={(value) => setGroupName(value)}
             />
 
-            <View style={styles.modalbuttonContainer}>
-                <Pressable style={styles.modalbutton} onPress={handleCreateRoom}>
-                    <Text style={styles.modaltext}>CREATE</Text>
-                </Pressable>
-                <Pressable
-                    style={[styles.modalbutton, { backgroundColor: "#E14D2A" }]}
-                    onPress={closeModal}
-                >
-                    <Text style={styles.modaltext}>CANCEL</Text>
-                </Pressable>
+            <View
+                style={{gap:10}}
+                className='flex-row justify-center mt-5'
+            >
+                <Text_Botton title={'CREATE'} textColor={'white'} color={'darkgreen'} func={handleCreateRoom}/>
+                <Text_Botton title={'cansel'} textColor={'white'} color={'darkred'} func={closeModal}/>
             </View>
         </View>
     );

@@ -22,7 +22,9 @@ const ChatComponent = ({ item }) => {
     };
 
     return (
-        <Pressable style={styles.cchat} onPress={handleNavigation}>
+        <Pressable
+            className='w-full flex-row bg-gray-100 items-center rounded-md px-[15px] h-[80px] mb-[10px] '
+            onPress={handleNavigation}>
             
             <View style={styles.crightContainer}>
                 <View>

@@ -1,5 +1,7 @@
 import React,{useState, useEffect,useLayoutEffect, useMemo} from "react";
-import { View, Text, Pressable, SafeAreaView, FlatList } from "react-native";
+import { View, Text, Pressable, SafeAreaView, FlatList,StatusBar } from "react-native";
+import {Icon_Botton} from '../components/Botton'
+import {faUserGroup} from '@fortawesome/free-solid-svg-icons';
 import socket from "../utils/socket";
 
 //👇🏻 The Modal component
@@ -58,18 +60,22 @@ useLayoutEffect(() => {
 
 
     return (
-        <SafeAreaView style={styles.chatscreen}>
-            <View style={styles.chattopContainer}>
-                <View style={styles.chatheader}>
+        <SafeAreaView
+            className='bg-white flex-1 relative p-[10px]'
+        >
+            <StatusBar barStyle={'dark-content'} backgroundColor={'white'}/>
+            <View
+                className='bg-purple-900 rounded-md h-[70px] w-full p-[20px] justify-center mb-[15px]'
+            >
+                <View
+                    className="flex-row justify-between items-center "
+                >
                     <Text
-                        className='text-red-500 text-xl'
-                    >Chats</Text>
+                        className='text-purple-400 font-bold text-xl'
+                    >Chat Application</Text>
 
             {/* 👇🏻 Logs "ButtonPressed" to the console when the icon is clicked */}
-                    <Pressable onPress={() => setVisible(true)}>
-                        {/* <Feather name='edit' size={24} color='green' /> */}
-                        <Text>CreateRoom</Text>
-                    </Pressable>
+                    <Icon_Botton icon={faUserGroup} color={'lightgray'} func={() => setVisible(true)}/>
                 </View>
             </View>
 
