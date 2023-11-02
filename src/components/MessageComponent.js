@@ -1,5 +1,7 @@
 import { View, Text } from "react-native";
 import React from "react";
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import {faUser} from '@fortawesome/free-solid-svg-icons';
 // import { Ionicons } from "@expo/vector-icons";
 import { styles } from "../utils/styles";
 
@@ -16,19 +18,9 @@ export default function MessageComponent({ item, user }) {
                 }
             >
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    {/* <Ionicons
-                        name='person-circle-outline'
-                        size={30}
-                        color='black'
-                        style={styles.mavatar}
-                    /> */}
-                    <Text>Icon</Text>
+                <FontAwesomeIcon icon={faUser} size={15} color={'gray'}/>
                     <View
-                        style={
-                            status
-                                ? styles.mmessage
-                                : [styles.mmessage, { backgroundColor: "rgb(194, 243, 194)" }]
-                        }
+                        className='max-w-[50%] bg-purple-300 p-[15px] rounded-lg rounded-br-[0] mb-1'
                     >
                         <Text>{item.text}</Text>
                     </View>

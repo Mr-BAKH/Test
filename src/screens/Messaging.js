@@ -70,43 +70,42 @@ useEffect(() => {
     };
 
     return (
-        <View style={styles.messagingscreen}>
-            <View
-                style={[
-                    styles.messagingscreen,
-                    { paddingVertical: 15, paddingHorizontal: 10 },
-                ]}
-            >
-                {chatMessages[0] ? (
+        <View   
+            className='flex-1'
+        >
+            <View className="flex-1 relative items-center">
+            <View className="flex-1 w-full">
+                {chatMessages[0] && (
                     <FlatList
                         data={chatMessages}
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={{padding:15, paddingBottom:70}}
                         renderItem={({ item }) => (
                             <MessageComponent item={item} user={user} />
                         )}
                         keyExtractor={(item) => item.id}
                     />
-                ) : (
-                    ""
                 )}
-            </View>
-
-            <View
-                className='flex-row w-full justify-center items-center px-[15px] backdrop-blur-sm mb-[40px]'
-            >
-                <TextInput
-                    className="flex-grow"
-                    placeholder="write..."
-                    onChangeText={(value) => setMessage(value)}
-                    value={message}
-                />
-                <View
-                    style={{gap:10}}
-                    className='flex-row'
-                >
-                    <Botton icon={faCamera} color={'gray'} func={()=>console.log('useCamera!')}/>
-                    <Botton icon={faMicrophoneLines} color={'gray'} func={()=>console.log('useMicrophone!')}/>
-                    <Botton icon={faPaperPlane} color={'darkblue'} func={handleNewMessage}/>
                 </View>
+                {/* controll botton */}
+                <View
+                    className='flex-row px-[5px] shadow-2xl absolute bottom-5 w-[90%] rounded-3xl bg-white justify-center items-center'
+                >
+                    <TextInput
+                        className="flex-grow max-w-[60%]"
+                        placeholder="write..."
+                        onChangeText={(value) => setMessage(value)}
+                        value={message}
+                    />
+                    <View
+                        style={{gap:10}}
+                        className='flex-row w-fit'
+                    >
+                        <Botton icon={faCamera} color={'gray'} func={()=>console.log('useCamera!')}/>
+                        <Botton icon={faMicrophoneLines} color={'gray'} func={()=>console.log('useMicrophone!')}/>
+                        <Botton icon={faPaperPlane} color={'darkblue'} func={handleNewMessage}/>
+                    </View>
+            </View>
             </View>
         </View>
     );
