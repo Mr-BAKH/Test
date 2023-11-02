@@ -71,7 +71,7 @@ useEffect(() => {
 
     return (
         <View   
-            className='flex-1'
+            className='flex-1 bg-white'
         >
             <View className="flex-1 relative items-center">
             <View className="flex-1 w-full">
@@ -89,11 +89,12 @@ useEffect(() => {
                 </View>
                 {/* controll botton */}
                 <View
-                    className='flex-row px-[5px] shadow-2xl absolute bottom-5 w-[90%] rounded-3xl bg-white justify-center items-center'
+                    className='flex-row px-[10px] shadow-2xl absolute bottom-5 w-[90%] rounded-3xl bg-purple-900 justify-center items-center'
                 >
                     <TextInput
-                        className="flex-grow max-w-[60%]"
+                        className="flex-grow max-w-[60%] text-white"
                         placeholder="write..."
+                        placeholderTextColor={'white'}
                         onChangeText={(value) => setMessage(value)}
                         value={message}
                     />
@@ -101,9 +102,9 @@ useEffect(() => {
                         style={{gap:10}}
                         className='flex-row w-fit'
                     >
-                        <Botton icon={faCamera} color={'gray'} func={()=>console.log('useCamera!')}/>
-                        <Botton icon={faMicrophoneLines} color={'gray'} func={()=>console.log('useMicrophone!')}/>
-                        <Botton icon={faPaperPlane} color={'darkblue'} func={handleNewMessage}/>
+                        <Botton icon={faCamera} color={'lightgray'} func={()=>console.log('useCamera!')}/>
+                        <Botton icon={faMicrophoneLines} color={'lightgray'} func={()=>console.log('useMicrophone!')}/>
+                        <Botton icon={faPaperPlane} color={'white'} func={handleNewMessage}/>
                     </View>
             </View>
             </View>
