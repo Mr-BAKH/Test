@@ -15,7 +15,6 @@ import { styles } from "../utils/styles";
 socket.on("roomsList", async(data) => {
     let trust = await data;
     if(trust){
-        console.log('from socket! >>>>> ',data)
         return data;
     }else{
         console.log('data did not find!')
@@ -23,12 +22,10 @@ socket.on("roomsList", async(data) => {
     }
 });
 
-const Chat = () => {
-
-
+const Chat = ({route}) => {
+    
+    const { username } = route.params;
     const [visible, setVisible] = React.useState(false); //default false
-    //👇🏻 Dummy list of rooms
-  
     const [rooms, setRooms] = useState([]);
     
     let socketRead = socket;
@@ -36,7 +33,6 @@ const Chat = () => {
         socket.on("roomsList", async(data) => {
             let trust = await data;
             if(trust){
-                console.log('from socket! >>>>> ',data)
                 setRooms(data)
             }else{
                 console.log('data did not find!')
@@ -55,7 +51,6 @@ useLayoutEffect(() => {
             .catch((err) => console.error(err));
     }
     fetchGroups();
-    console.log('get data from server!<<<<<')
 }, []);
 
 
@@ -83,7 +78,7 @@ useLayoutEffect(() => {
                 {rooms.length > 0 ? (
                     <FlatList
                         data={rooms}
-                        renderItem={({ item }) => <ChatComponent item={item} />}
+                        renderItem={({ item }) => <ChatComponent item={item} username={username} />}
                         keyExtractor={(item) => item.id}
                     />
                 ) : (
@@ -93,10 +88,7 @@ useLayoutEffect(() => {
                     </View>
                 )}
             </View>
-              {/*
-                Pass setVisible as prop in order to toggle 
-                the display within the Modal component.
-            */}
+           
             {visible ? <Modal setVisible={setVisible} /> : ""}
         </SafeAreaView>
     );

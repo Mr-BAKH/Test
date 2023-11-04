@@ -3,7 +3,6 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
     loginscreen: {
         flex: 1,
-        backgroundColor: "#EEF1FF",
         alignItems: "center",
         justifyContent: "center",
         padding: 12,

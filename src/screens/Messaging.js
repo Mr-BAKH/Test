@@ -12,25 +12,25 @@ const Messaging = ({ route, navigation }) => {
 
     const [chatMessages, setChatMessages] = useState([]);
     const [message, setMessage] = useState("");
-    const [user, setUser] = useState("");
+    const [user, setUser] = useState('')
 
-    const { name, id } = route.params;
+    const { name, id, username } = route.params;
 
     useLayoutEffect(() => {
         navigation.setOptions({ title: name });
         socket.emit("findRoom", id);
         socket.on("foundRoom", (roomChats) => setChatMessages(roomChats));
+        setUser(username)
     }, []);
 
     useEffect(() => {
         socket.on("foundRoom", (roomChats) => {
             setChatMessages(roomChats);
-            console.log(roomChats)
         });
     }, [lesonSocket])
 
    
-    const handleNewMessage = () => {
+    const handleNewMessage = ({username}) => {
         setMessage(''); // clear message box
         const hour =
             new Date().getHours() < 10

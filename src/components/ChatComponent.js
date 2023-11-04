@@ -1,10 +1,12 @@
 import { View, Text, Pressable } from "react-native";
 import React, { useLayoutEffect, useState } from "react";
+import {faUser} from '@fortawesome/free-solid-svg-icons';
+import {Icon_Botton} from './Botton'
 // import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { styles } from "../utils/styles";
 
-const ChatComponent = ({ item }) => {
+const ChatComponent = ({ item, username }) => {
     const navigation = useNavigation();
     const [messages, setMessages] = useState({});
 
@@ -18,6 +20,7 @@ const ChatComponent = ({ item }) => {
         navigation.navigate("Messaging", {
             id: item.id,
             name: item.roomName,
+            username
         });
     };
 
@@ -28,15 +31,15 @@ const ChatComponent = ({ item }) => {
             
             <View style={styles.crightContainer}>
                 <View>
-                    <Text style={styles.cusername}>{item.roomName}</Text>
 
+                    <Text style={styles.cusername}>{item.roomName}</Text>
                     <Text style={styles.cmessage}>
                         {messages?.text ? messages.text : "Tap to start chatting"}
                     </Text>
                 </View>
                 <View>
                     <Text style={styles.ctime}>
-                        {messages?.time ? messages.time : "now"}
+                        last change /{messages?.time ? messages.time : "now"}
                     </Text>
                 </View>
             </View>

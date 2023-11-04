@@ -16,30 +16,19 @@ import { styles } from "../utils/styles";
 const Login = ({ navigation }) => {
     const [username, setUsername] = useState("");
 
-//     const storeUsername = async () => {
-//       try {
-//           //👇🏻 async function - saves the username to AsyncStorage
-//           //   redirecting to the Chat page
-//           await AsyncStorage.setItem("username", username);
-//           navigation.navigate("Chat");
-//       } catch (e) {
-//           Alert.alert("Error! While saving username");
-//       }
-//   };
-
     //👇🏻 checks if the input field is empty
     const handleSignIn = () => {
         if (username.trim()) {
-            //👇🏻 Logs the username to the console
-            console.log({ username });
-            navigation.navigate("Chat");
+            navigation.navigate("Chat",{username});
         } else {
             Alert.alert("Username is required.");
         }
     };
 
     return (
-        <SafeAreaView style={styles.loginscreen}>
+        <SafeAreaView
+            className=" flex-1 bg-white items-center justify-center p-[12px] w-full"
+        >
             <View style={styles.loginscreen}>
                 <Text style={styles.loginheading}>Sign in</Text>
                 <View style={styles.logininputContainer}>
@@ -50,8 +39,10 @@ const Login = ({ navigation }) => {
                         onChangeText={(value) => setUsername(value)}
                     />
                 </View>
-
-                <Pressable onPress={handleSignIn} style={styles.loginbutton}>
+                <Pressable 
+                    onPress={handleSignIn}
+                    className="bg-green-600 p-[12px] my-[10px] w-[60%] rounded-[20px]"
+                >
                     <View>
                         <Text style={styles.loginbuttonText}>Get Started</Text>
                     </View>
