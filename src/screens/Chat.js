@@ -1,7 +1,7 @@
 import React,{useState, useEffect,useLayoutEffect, useMemo} from "react";
 import { View, Text, Pressable, SafeAreaView, FlatList,StatusBar } from "react-native";
 import {Icon_Botton} from '../components/Botton'
-import {faUserGroup} from '@fortawesome/free-solid-svg-icons';
+import {faUserGroup,faMagnifyingGlass} from '@fortawesome/free-solid-svg-icons';
 import socket from "../utils/socket";
 
 //👇🏻 The Modal component
@@ -72,7 +72,10 @@ useLayoutEffect(() => {
                     >Chat Application</Text>
 
             {/* 👇🏻 Logs "ButtonPressed" to the console when the icon is clicked */}
+                <View className="flex-row">
                     <Icon_Botton icon={faUserGroup} color={'lightgray'} func={() => setVisible(true)}/>
+                    <Icon_Botton icon={faMagnifyingGlass} color={'lightgray'} func={() => console.log('search...')}/>
+                </View>
                 </View>
             </View>
 
