@@ -8,6 +8,7 @@ import socket from "../utils/socket";
 import Modal from "../components/Modal";
 import ChatComponent from "../components/ChatComponent";
 import { styles } from "../utils/styles";
+import CheckPermision from '../utils/checkpermission'
 
 //set socket valu for know about the chage in socket
 
@@ -51,6 +52,7 @@ useLayoutEffect(() => {
             .catch((err) => console.error(err));
     }
     fetchGroups();
+    CheckPermision(); // check permision!
 }, []);
 
 
