@@ -18,17 +18,16 @@ export default function MessageComponent({ item, user }) {
                         : [styles.mmessageWrapper, { alignItems: "flex-end" }]
                 }
             >
-                <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
+                <View className="flex-row items-end">
                 {status && <FontAwesomeIcon style={{marginBottom:5}} icon={faUser} size={15} color={'gray'}/>}
                     <View
-                        className={`max-w-[50%] p-[15px] relative rounded-lg  mb-1 ${boxStyle}`}
+                        className={`max-w-[50%] px-[15px] py-[8px] rounded-lg  mb-1 ${boxStyle}`}
                     >
-                        
-                        {status && <Text className='absolute bottom-[2px] left-[2px] text-[10px] tracking-wide text-gray-950/25'>{item.user}</Text>}
-                        <Text>{item.text}</Text>
+                     <Text>{item.text}</Text>
+                     {status && <Text className='text-[10px] tracking-wide text-gray-950/25'>{item.user}</Text>}
                     </View>
                 </View>
-                <Text style={{ marginLeft: 40 }}>{item.time}</Text>
+                <Text>{item.time}</Text>
             </View>
         </View>
     );
