@@ -182,9 +182,10 @@ const Messaging = ({ route, navigation }) => {
                             <Progress.Bar 
                             className='absolute left-3'
                             width={wp('62%')}
-                            color='darkred' 
+                            height={5}
+                            color={progressVoice == 0 ?'rgba(0,0,0,0.5)':'darkred'} 
                             borderWidth={0}
-                            progress={progressVoice} 
+                            progress={progressVoice ==0 ? 1:progressVoice} 
                             //   progress={1} 
                             indeterminateAnimationDuration={500}
                             />
