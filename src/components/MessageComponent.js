@@ -24,11 +24,11 @@ export default function MessageComponent({ item, user }) {
                         style={{shadowColor:'gray'}}
                         className={`max-w-[50%] px-[15px] py-[8px] shadow-lg rounded-lg  mb-1 ${boxStyle}`}
                     >
-                     <Text>{item.text}</Text>
+                     <Text className='text-[16px]'>{item.text}</Text>
                      {status && <Text className='text-[10px] tracking-wide text-gray-950/25'>{item.user}</Text>}
                     </View>
                 </View>
-                <Text>{item.time}</Text>
+                <Text className='text-xs'>{item.time}</Text>
             </View>
         </View>
     );

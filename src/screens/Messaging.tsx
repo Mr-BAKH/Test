@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useState, useEffect } from "react";
-import { View, TextInput, Text, FlatList, Pressable,Platform } from "react-native";
+import { View, TextInput, Text, FlatList, Pressable,Platform,Alert } from "react-native";
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import * as Progress from 'react-native-progress';
 import AudioRecorderPlayer, {
@@ -52,13 +52,14 @@ const Messaging = ({ route, navigation }) => {
 
    
     const handleNewMessage = () => {
-        setMessage(''); // clear message box
-        const hour =
+        if(message.length > 0){
+            setMessage(''); // clear message box
+            const hour =
             new Date().getHours() < 10
                 ? `0${new Date().getHours()}`
                 : `${new Date().getHours()}`;
 
-        const mins =
+            const mins =
             new Date().getMinutes() < 10
                 ? `0${new Date().getMinutes()}`
                 : `${new Date().getMinutes()}`;
@@ -69,6 +70,10 @@ const Messaging = ({ route, navigation }) => {
                     user,
                     timestamp: { hour, mins },
                 });
+        }else{
+            Alert.alert("Write something!");
+        }
+       
     };
 
     const handleRecordVoice = async()=>{
@@ -176,8 +181,9 @@ const Messaging = ({ route, navigation }) => {
                 {/* controll botton */}
                 {
                     !isRecordVoice && voicePath!== '' && showPlayVoice &&
-                        <View
-                            className='flex-row bg-gray-900/90  rounded-full backdrop-blur-lg p-[5px] shadow-sm absolute w-[75%] items-center justify-end bottom-[77px]'
+                        <View  
+                            style={{shadowColor:'darkred'}}
+                            className='flex-row bg-gray-900/90  rounded-full backdrop-blur-lg p-[5px] shadow-md absolute w-[75%] items-center justify-end bottom-[77px]'
                         >
                             <Progress.Bar 
                             className='absolute left-3'

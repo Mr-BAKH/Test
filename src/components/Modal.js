@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Pressable } from "react-native";
+import { View, Text, TextInput, Pressable,Alert } from "react-native";
 import React, { useState } from "react";
 import { styles } from "../utils/styles";
 import {Text_Botton} from "./Botton"
@@ -14,8 +14,12 @@ const Modal = ({ setVisible }) => {
 
     //👇🏻 Logs the group name to the console
     const handleCreateRoom = () => {
-        socket.emit("createRoom", groupName);
-        closeModal();
+        if(groupName.length > 0){
+            socket.emit("createRoom", groupName);
+            closeModal();
+        }else{
+            Alert.alert("Write something!");
+        }
     };
     return (
         <View

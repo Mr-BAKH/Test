@@ -34,7 +34,7 @@ const ChatComponent = ({ item, username }) => {
 
                     <Text style={styles.cusername}>{item.roomName}</Text>
                     <Text style={styles.cmessage}>
-                        {messages?.text ? messages.text : "Tap to start chatting"}
+                        {messages?.text? (messages.text?.length > 30? messages.text.slice(0,30)+'...': messages.text) : "Tap to start chatting"}
                     </Text>
                 </View>
                 <View>

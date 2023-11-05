@@ -63,6 +63,7 @@ export const styles = StyleSheet.create({
     },
     chatlistContainer: {
         paddingHorizontal: 10,
+        flex:1
     },
     chatemptyContainer: {
         width: "100%",
