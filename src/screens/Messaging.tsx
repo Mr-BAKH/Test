@@ -198,7 +198,8 @@ const Messaging = ({ route, navigation }) => {
                         </View>
                 }
                 <View
-                    className='flex-row px-[15px] shadow-2xl absolute bottom-5 w-[90%] rounded-3xl bg-purple-900 justify-center items-center'
+                    style={{shadowColor:'purple'}}
+                    className='flex-row px-[15px] absolute bottom-5 w-[90%] shadow-md rounded-3xl bg-purple-950 justify-center items-center'
                 >
                     <TextInput
                         className="flex-grow max-w-[60%] text-white"
@@ -211,9 +212,9 @@ const Messaging = ({ route, navigation }) => {
                         style={{gap:10}}
                         className='flex-row w-fit'
                     >
-                        <Icon_Botton icon={faCamera} color={'lightgray'} func={()=>console.log('useCamera!')}/>
-                        <Icon_Botton icon={faMicrophoneLines} color={isRecordVoice?'orange':'lightgray'} func={handleRecordVoice}/>
-                        <Icon_Botton icon={faPaperPlane} color={'white'} func={handleNewMessage}/>
+                        <Icon_Botton activeShadow={false} colorShadow={''} icon={faCamera} color={'rgba(255,255,255,0.5)'} func={()=>console.log('useCamera!')}/>
+                        <Icon_Botton activeShadow={isRecordVoice&& true} colorShadow={'#fff'} icon={faMicrophoneLines} color={isRecordVoice?'pink':'rgba(255,255,255,0.5)'} func={handleRecordVoice}/>
+                        <Icon_Botton activeShadow={true} colorShadow={''} icon={faPaperPlane} color={'pink'} func={handleNewMessage}/>
                     </View>
             </View>
             </View>

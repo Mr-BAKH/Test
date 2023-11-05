@@ -21,7 +21,8 @@ export default function MessageComponent({ item, user }) {
                 <View className="flex-row items-end">
                 {status && <FontAwesomeIcon style={{marginBottom:5}} icon={faUser} size={15} color={'gray'}/>}
                     <View
-                        className={`max-w-[50%] px-[15px] py-[8px] rounded-lg  mb-1 ${boxStyle}`}
+                        style={{shadowColor:'gray'}}
+                        className={`max-w-[50%] px-[15px] py-[8px] shadow-lg rounded-lg  mb-1 ${boxStyle}`}
                     >
                      <Text>{item.text}</Text>
                      {status && <Text className='text-[10px] tracking-wide text-gray-950/25'>{item.user}</Text>}
