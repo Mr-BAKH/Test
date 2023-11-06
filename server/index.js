@@ -9,7 +9,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use(cors());
-const ip = '192.168.77.100' //
+const ip = 'localhost' //
 
 const IO = require('socket.io')(http, {
     cors: {
@@ -44,8 +44,9 @@ IO.on('connection', (socket) => {
     socket.on("newMessage", (data) => {
         const generateID = () => Math.random().toString(36).substring(2, 10);
         //👇🏻 Destructures the property from the object
-        const { room_id, message, user, timestamp } = data;
-        console.log(room_id, message, user, timestamp)
+        // const { room_id, message, user, timestamp } = data;
+        const { room_id, message, type, user, timestamp } = data;
+        console.log(room_id, message, type, user, timestamp)
     
         //👇🏻 Finds the room where the message was sent
         let result = chatRooms.filter((room) => room.id == room_id);
@@ -55,6 +56,7 @@ IO.on('connection', (socket) => {
             id: generateID(),
             text: message,
             user,
+            type,// is not default!
             time: `${timestamp.hour}:${timestamp.mins}`,
         };
         //👇🏻 Updates the chatroom messages

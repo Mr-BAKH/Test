@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState, useEffect } from "react";
+import React, { useLayoutEffect, useState, useEffect, useMemo } from "react";
 import { View, TextInput, Text, FlatList, Pressable,Platform,Alert } from "react-native";
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import * as Progress from 'react-native-progress';
@@ -33,9 +33,8 @@ const Messaging = ({ route, navigation }) => {
     const [showPlayVoice,setShowPlayVoice] = useState(false)
     const [progressVoice,setProgressVoice] = useState(0)
 
-
-    
     const { name, id, username } = route.params;
+    
 
     useLayoutEffect(() => {
         navigation.setOptions({ title: name });
@@ -52,28 +51,46 @@ const Messaging = ({ route, navigation }) => {
 
    
     const handleNewMessage = () => {
-        if(message.length > 0){
-            setMessage(''); // clear message box
-            const hour =
-            new Date().getHours() < 10
-                ? `0${new Date().getHours()}`
-                : `${new Date().getHours()}`;
 
-            const mins =
-            new Date().getMinutes() < 10
-                ? `0${new Date().getMinutes()}`
-                : `${new Date().getMinutes()}`;
+        let type = '';
+        const hour =
+        new Date().getHours() < 10
+            ? `0${new Date().getHours()}`
+            : `${new Date().getHours()}`;
 
-                socket.emit("newMessage", {
-                    message,
-                    room_id: id,
-                    user,
-                    timestamp: { hour, mins },
-                });
-        }else{
-            Alert.alert("Write something!");
+        const mins =
+        new Date().getMinutes() < 10
+            ? `0${new Date().getMinutes()}`
+            : `${new Date().getMinutes()}`;
+
+        if(message.length > 0 && voice == undefined){
+            type = 'TEXT'
+            socket.emit("newMessage", {
+                message,
+                room_id: id,
+                user,
+                type: type,
+                timestamp: { hour, mins },
+            });
         }
-       
+        if(message.length == 0 && voice !== undefined){
+            type = 'VOICE'
+            socket.emit("newMessage", {
+                message: 'voice!',
+                room_id: id,
+                user,
+                type: type ,
+                timestamp: { hour, mins },
+            });
+        }
+        // if client dont sent anythings
+        if((message.length == 0 || voice == undefined)&& type == ''){
+            console.log(message.length,voice,type);
+            Alert.alert("send something!");
+        }
+        // clear all type of input
+        setMessage(''); // clear message box
+        setVioce(undefined); //clear voice class
     };
 
     const handleRecordVoice = async()=>{
@@ -131,6 +148,7 @@ const Messaging = ({ route, navigation }) => {
                 setVoicePath(val)
                 setIsRecordVoice(!isRecordVoice)
                 setShowPlayVoice(true)
+                setProgressVoice(0)
                 // setVioce(audioRecorderPlayer)
 
             }).catch(e=> console.log("ERROR in stop:",e))
@@ -150,8 +168,7 @@ const Messaging = ({ route, navigation }) => {
             // console.log('playBackListener', e);
             setProgressVoice(e.currentPosition/e.duration)
             if(e.currentPosition/e.duration == 1) {
-                setProgressVoice(0)
-            
+                setProgressVoice(0)            
             }
             // console.log(progress)
           });
@@ -180,7 +197,7 @@ const Messaging = ({ route, navigation }) => {
                 </View>
                 {/* controll botton */}
                 {
-                    !isRecordVoice && voicePath!== '' && showPlayVoice &&
+                    !isRecordVoice && voice !== undefined && voicePath!== '' && showPlayVoice &&
                         <View  
                             style={{shadowColor:'darkred'}}
                             className='flex-row bg-gray-900/90  rounded-full backdrop-blur-lg p-[5px] shadow-md absolute w-[75%] items-center justify-end bottom-[77px]'
@@ -200,7 +217,6 @@ const Messaging = ({ route, navigation }) => {
                             <View className='absolute right-[-15%] bg-gray-900/90 rounded-full justify-center items-center'>
                                 <Icon_Botton icon={faXmark} color={'darkred'} func={()=>setShowPlayVoice(false)}/>
                             </View>
-
                         </View>
                 }
                 <View
@@ -220,7 +236,7 @@ const Messaging = ({ route, navigation }) => {
                     >
                         <Icon_Botton activeShadow={false} colorShadow={''} icon={faCamera} color={'rgba(255,255,255,0.5)'} func={()=>console.log('useCamera!')}/>
                         <Icon_Botton activeShadow={isRecordVoice&& true} colorShadow={'#fff'} icon={faMicrophoneLines} color={isRecordVoice?'pink':'rgba(255,255,255,0.5)'} func={handleRecordVoice}/>
-                        <Icon_Botton activeShadow={true} colorShadow={''} icon={faPaperPlane} color={'pink'} func={handleNewMessage}/>
+                        <Icon_Botton backColor={'purple'}  activeShadow={true} colorShadow={''} icon={faPaperPlane} color={'white'} func={handleNewMessage}/>
                     </View>
             </View>
             </View>

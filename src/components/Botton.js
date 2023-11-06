@@ -3,12 +3,15 @@ import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import { Pressable,Text } from "react-native";
 
 
-export const Icon_Botton = ({icon,func,color,activeShadow,colorShadow})=>{
+export const Icon_Botton = ({icon,func,color,activeShadow,colorShadow,backColor})=>{
     return(
         <Pressable
             onPress={func}
-            style={colorShadow !== ''?{shadowColor:colorShadow}:{shadowColor:'#000'}}
-            className={`p-[8px] rounded-full ${activeShadow&& 'shadow-lg'} ${colorShadow&& activeShadow&& 'bg-black'}`}
+            style={[
+                colorShadow !== ''?{shadowColor:colorShadow}:{shadowColor:'#000'},
+                backColor?{backgroundColor:backColor}: activeShadow&&{backgroundColor:'#000'},
+            ]}
+            className={`p-[8px] rounded-full ${activeShadow&& 'shadow-lg'}`}
         >
             <FontAwesomeIcon icon={icon} size={20} color={color}/>
         </Pressable>
