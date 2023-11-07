@@ -14,8 +14,8 @@ import AudioRecorderPlayer, {
     PlayBackType,
     RecordBackType,
   } from 'react-native-audio-recorder-player';
-
-import {faPaperPlane,faCamera,faMicrophoneLines,faPlay,faXmark,faPause} from '@fortawesome/free-solid-svg-icons';
+import RNFS from 'react-native-fs';
+import {faPaperPlane,faCamera,faStop,faMicrophoneLines,faPlay,faXmark,faPause} from '@fortawesome/free-solid-svg-icons';
 import socket from "../utils/socket";
 import {Icon_Botton} from '../components/Botton'
 import MessageComponent from "../components/MessageComponent";
@@ -50,7 +50,7 @@ const Messaging = ({ route, navigation }) => {
     }, [lesonSocket])
 
    
-    const handleNewMessage = () => {
+    const handleNewMessage = async() => {
 
         let type = '';
         const hour =
@@ -72,87 +72,116 @@ const Messaging = ({ route, navigation }) => {
                 type: type,
                 timestamp: { hour, mins },
             });
+            setMessage(''); // clear message box
         }
         if(message.length == 0 && voice !== undefined){
+            stopRecordingVoice(); // stop recording if is running!
             type = 'VOICE'
-            socket.emit("newMessage", {
-                message: 'voice!',
-                room_id: id,
-                user,
-                type: type ,
-                timestamp: { hour, mins },
-            });
+            try{
+               await RNFS.readFile(voicePath, 'base64').then(contents => {
+                    let file = contents;
+                    if(file){
+                        socket.emit("newMessage", {
+                            message: file,
+                            room_id: id,
+                            user,
+                            type: type ,
+                            timestamp: { hour, mins },
+                        });
+                    }
+                });
+            }catch(e){
+                console.log('Read file from the RNFS')
+            }
+            setVioce(undefined)
         }
         // if client dont sent anythings
         if((message.length == 0 || voice == undefined)&& type == ''){
             console.log(message.length,voice,type);
             Alert.alert("send something!");
         }
-        // clear all type of input
-        setMessage(''); // clear message box
-        setVioce(undefined); //clear voice class
+        // if client write message and record voice
+       
     };
 
-    const handleRecordVoice = async()=>{
-        
-        if(!isRecordVoice){
-           const audioRecorderPlayer = new AudioRecorderPlayer(); 
-           const path = Platform.select({
-                ios: undefined,
-                android: undefined,
-                // android: `${this.dirs.CacheDir}/hello.mp3`,
-              });
-              const audioSet: AudioSet = {
-                AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
-                AudioSourceAndroid: AudioSourceAndroidType.MIC,
-                AVEncoderAudioQualityKeyIOS: AVEncoderAudioQualityIOSType.high,
-                AVNumberOfChannelsKeyIOS: 2,
-                AVFormatIDKeyIOS: AVEncodingOption.aac,
-                OutputFormatAndroid: OutputFormatAndroidType.AAC_ADTS,
-              };
-            // start recording!
-            return new Promise((res,rej)=>{
-                const result = audioRecorderPlayer.startRecorder(path,audioSet);
-                if(result){
-                    res(result)
-                    audioRecorderPlayer.addRecordBackListener((e: RecordBackType) => {
-                        console.log('bakhListener>>>',e.currentPosition,audioRecorderPlayer.mmssss(
-                            Math.floor(e.currentPosition)))
-                      });
-                }else{
-                    rej('ERROR in recording!')
-                }
-                // setVioce(audioRecorderPlayer)
-                // setIsRecordVoice(!isRecordVoice)
-            })
-            .then(val => {
-                console.log("promise Responce from Start Recording >>>",val)
-                setIsRecordVoice(!isRecordVoice)
-                setVioce(audioRecorderPlayer)
-                // setVioce(val)
-            })
-            .catch(error => console.log("ERROR in Recording Voice!",error))
-        }else{
-            // console.log(voice)
+    const handleRecordVoice = ()=>{
+        if(message.length == 0){
+            if(!isRecordVoice){
+                    // start recording!
+                    startRecordingVoice()
+            }else{
             // stop recording!
-            // setIsRecordVoice(!isRecordVoice)
-            return new Promise(async(res,rej)=>{
-                const result = await voice.stopRecorder();
-                if(result){
-                    res(result)
-                    voice.removeRecordBackListener();
-                    // voice.setState({recordSecs: 0,});
-                }else{rej('ERROR in stop!')};
-              }).then(val => {
-                console.log("promise Responce from Stop >>>",val)
-                setVoicePath(val)
-                setIsRecordVoice(!isRecordVoice)
-                setShowPlayVoice(true)
-                setProgressVoice(0)
-                // setVioce(audioRecorderPlayer)
-
-            }).catch(e=> console.log("ERROR in stop:",e))
+            stopRecordingVoice()
+            }
+        }else{
+            setMessage('');
         }
+        
+    }
+
+    const stopRecordingVoice = async()=>{
+        return new Promise(async(res,rej)=>{
+            const result = await voice.stopRecorder();
+            if(result){
+                res(result)
+                voice.removeRecordBackListener();
+                // voice.setState({recordSecs: 0,});
+            }else{rej('ERROR in stop!')};
+          }).then(val => {
+            console.log("promise Responce from Stop >>>",val)
+            setVoicePath(val)
+            setIsRecordVoice(false)
+            setShowPlayVoice(true)
+            setProgressVoice(0)
+
+            // setVioce(audioRecorderPlayer)
+
+        }).catch(e=> console.log("ERROR in stop:",e))
+
+    }
+
+    const startRecordingVoice = async()=>{
+
+        const audioRecorderPlayer = new AudioRecorderPlayer();
+
+
+        const path = Platform.select({
+             ios: undefined,
+             android: undefined,
+             // android: `${this.dirs.CacheDir}/hello.mp3`,
+           });
+           const audioSet: AudioSet = {
+             AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
+             AudioSourceAndroid: AudioSourceAndroidType.MIC,
+             AVEncoderAudioQualityKeyIOS: AVEncoderAudioQualityIOSType.high,
+             AVNumberOfChannelsKeyIOS: 2,
+             AVFormatIDKeyIOS: AVEncodingOption.aac,
+             OutputFormatAndroid: OutputFormatAndroidType.AAC_ADTS,
+           };
+
+        return new Promise((res,rej)=>{
+            const result = audioRecorderPlayer.startRecorder(path,audioSet);
+            if(result){
+                res(result)
+                audioRecorderPlayer.addRecordBackListener((e: RecordBackType) => {
+                    console.log('bakhListener>>>',e.currentPosition,audioRecorderPlayer.mmssss(
+                        Math.floor(e.currentPosition)))
+                });
+            }else{
+                rej('ERROR in recording!')
+            }
+            // setVioce(audioRecorderPlayer)
+            // setIsRecordVoice(!isRecordVoice)
+        })
+        .then(val => {
+            console.log("promise Responce from Start Recording >>>",val)
+            setIsRecordVoice(!isRecordVoice)
+            setVioce(audioRecorderPlayer)
+            // setVioce(val)
+        })
+        .catch(error => console.log("ERROR in Recording Voice!",error))
+
+        
     }
 
     const handlePlayVoice = async (): Promise<void> => {
@@ -215,7 +244,7 @@ const Messaging = ({ route, navigation }) => {
                             <Icon_Botton icon={progressVoice !== 0? faPause :faPlay} color={'darkred'} func={handlePlayVoice}/>
                             {/* cancel icon */}
                             <View className='absolute right-[-15%] bg-gray-900/90 rounded-full justify-center items-center'>
-                                <Icon_Botton icon={faXmark} color={'darkred'} func={()=>setShowPlayVoice(false)}/>
+                                <Icon_Botton icon={faXmark} color={'darkred'} func={()=>setVioce(undefined)}/>
                             </View>
                         </View>
                 }
@@ -227,7 +256,7 @@ const Messaging = ({ route, navigation }) => {
                         className="flex-grow max-w-[60%] text-white"
                         placeholder="write..."
                         placeholderTextColor={'white'}
-                        onChangeText={(value) => setMessage(value)}
+                        onChangeText={(value) => {if(voice === undefined){setMessage(value)}}}
                         value={message}
                     />
                     <View
@@ -235,7 +264,7 @@ const Messaging = ({ route, navigation }) => {
                         className='flex-row w-fit'
                     >
                         <Icon_Botton activeShadow={false} colorShadow={''} icon={faCamera} color={'rgba(255,255,255,0.5)'} func={()=>console.log('useCamera!')}/>
-                        <Icon_Botton activeShadow={isRecordVoice&& true} colorShadow={'#fff'} icon={faMicrophoneLines} color={isRecordVoice?'pink':'rgba(255,255,255,0.5)'} func={handleRecordVoice}/>
+                        <Icon_Botton activeShadow={isRecordVoice&& true} colorShadow={'red'} icon={isRecordVoice? faStop:faMicrophoneLines} color={isRecordVoice?'darkred':'rgba(255,255,255,0.5)'} func={handleRecordVoice}/>
                         <Icon_Botton backColor={'purple'}  activeShadow={true} colorShadow={''} icon={faPaperPlane} color={'white'} func={handleNewMessage}/>
                     </View>
             </View>

@@ -15,7 +15,8 @@ export default function MessageComponent({ item, user }) {
     const status = item.user !== user;    
     const boxStyle=  status? 'rounded-bl-[0px] bg-purple-300': 'rounded-br-[0px] bg-sky-200'
     const boxStyleVoice=  status? 'rounded-bl-[0px] bg-purple-700': 'rounded-br-[0px] bg-sky-700'
-
+    const file = item.type === 'VOICE'? item.text : '...'
+    // console.log(file)
     return (
         <View>
             <View

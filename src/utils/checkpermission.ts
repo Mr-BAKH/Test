@@ -7,15 +7,18 @@ const Func = async()=>{
         PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
         PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
         PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+        PermissionsAndroid.PERMISSIONS.CAMERA,
       ]);
   
       // console.log('write external stroage', grants);
   
       if (
-        // grants['android.permission.WRITE_EXTERNAL_STORAGE'] ===
-        //   PermissionsAndroid.RESULTS.GRANTED &&
-        // grants['android.permission.READ_EXTERNAL_STORAGE'] ===
-        //   PermissionsAndroid.RESULTS.GRANTED &&
+        grants['android.permission.WRITE_EXTERNAL_STORAGE'] ===
+          PermissionsAndroid.RESULTS.GRANTED &&
+        grants['android.permission.READ_EXTERNAL_STORAGE'] ===
+          PermissionsAndroid.RESULTS.GRANTED &&
+        grants['android.permission.CAMERA'] ===
+          PermissionsAndroid.RESULTS.GRANTED &&
         grants['android.permission.RECORD_AUDIO'] ===
           PermissionsAndroid.RESULTS.GRANTED
       ) {
