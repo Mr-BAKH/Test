@@ -2,7 +2,6 @@ import { View, Text } from "react-native";
 import React,{useEffect,useState} from "react";
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faUser} from '@fortawesome/free-solid-svg-icons';
-import base64 from 'react-native-base64'
 import AudioRecorderPlayer, {
   } from 'react-native-audio-recorder-player';
   import type {
@@ -17,7 +16,6 @@ import * as Progress from 'react-native-progress';
 import {Icon_Botton} from './Botton'
 import RNFS from 'react-native-fs';
 import {faPlay,faXmark,faPause} from '@fortawesome/free-solid-svg-icons';
-
 
 
 export default function MessageComponent({ item, user }) {
@@ -37,13 +35,12 @@ export default function MessageComponent({ item, user }) {
                 setPathAudio(filePath)
             })
             .catch((error) => {
-            console.error('Error saving audio file:', error);
-        });
+                console.error('Error saving audio file:', error);
+            });
         }
     },[])
 
     const handlePlayVoice = async (): Promise<void> => {
-        console.log(pathAudio)
         if(pathAudio !== ''){
             const voice = new AudioRecorderPlayer();
             try {
