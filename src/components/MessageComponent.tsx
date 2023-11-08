@@ -18,20 +18,21 @@ import RNFS from 'react-native-fs';
 import {faPlay,faXmark,faPause} from '@fortawesome/free-solid-svg-icons';
 
 
-export default function MessageComponent({ item, user }) {
+export default function MessageComponent({ item, user,setVoice, voice, isrecording }) {
     const status = item.user !== user;    
     const boxStyle=  status? 'rounded-bl-[0px] bg-purple-300': 'rounded-br-[0px] bg-sky-200'
     const boxStyleVoice=  status? 'rounded-bl-[0px] bg-purple-700': 'rounded-br-[0px] bg-sky-700'
     const [pathAudio, setPathAudio] = useState<string>('')
+    const [progressVoice, setProgressVoice] = useState<number>(0)
+    const [isActive, SetIsActive] = useState<boolean>(false)
+
 
     useEffect(()=>{
-        // let file = item.type === 'VOICE' && base64.decode(item.text)
-        // console.log(file)
         if(item.type === 'VOICE'){
             const filePath = RNFS.DocumentDirectoryPath + `/${item.id}.mp3`;
             RNFS.writeFile(filePath, item.text, 'base64')
             .then(() => {
-                console.log('Audio file saved to:', filePath);
+                // console.log('Audio file saved to:', filePath);
                 setPathAudio(filePath)
             })
             .catch((error) => {
@@ -41,15 +42,18 @@ export default function MessageComponent({ item, user }) {
     },[])
 
     const handlePlayVoice = async (): Promise<void> => {
-        if(pathAudio !== ''){
+        if(pathAudio !== ''&& !isActive && voice === undefined && !isrecording){
+            setVoice(undefined); // clear chat room audio class
+            SetIsActive(true)
             const voice = new AudioRecorderPlayer();
             try {
-                const msg = await voice.startPlayer(pathAudio);
-                //? Default path
-                const volume = await voice.setVolume(1.0);
-                console.log(`path: ${msg}`, `volume: ${volume}`);
+                await voice.startPlayer(pathAudio);
                 voice.addPlayBackListener((e: PlayBackType) => {
-                  console.log('playBackListener', e);
+                  setProgressVoice(e.currentPosition/e.duration)
+                    if(e.currentPosition/e.duration == 1) {
+                        setProgressVoice(0);  
+                        SetIsActive(false)          
+                    }
                 });
               } catch (err) {
                 console.log('startPlayer error', err);
@@ -94,16 +98,26 @@ export default function MessageComponent({ item, user }) {
                             style={{shadowColor:'darkred',gap:5}}
                             className='flex-row items-center justify-center'
                         >
-                            <Progress.Bar 
-                            width={wp('50%')}
-                            height={5}
-                            color={1 ?'rgba(0,0,0,0.5)':'darkred'} 
-                            borderWidth={0}
-                            progress={1} 
-                            //   progress={1} 
-                            indeterminateAnimationDuration={500}
-                            />
-                            <Icon_Botton activeShadow={true} backColor={'#eeeeee'} colorShadow={''} icon={0? faPause :faPlay} color={'rgba(0,0,0,0.7)'} func={handlePlayVoice}/>
+                            <View className='jutify-center items-center relative'>
+                                <Progress.Bar 
+                                    width={wp('50%')}
+                                    height={5}
+                                    color={'rgba(0,0,0,0.2)'} 
+                                    borderWidth={0}
+                                    progress={1} 
+                                    className='absolute'
+                                />
+                                <Progress.Bar 
+                                width={wp('50%')}
+                                height={5}
+                                color={progressVoice > 0 && isActive ?'rgba(0,0,0,0.5)':'transparent'} 
+                                borderWidth={0}
+                                progress={progressVoice > 0 && isActive? progressVoice:0} 
+                                indeterminateAnimationDuration={1000}
+                                />
+
+                            </View>
+                            <Icon_Botton activeShadow={true} backColor={'#eeeeee'} colorShadow={''} icon={progressVoice !==0 && isActive ? faPause :faPlay} color={'rgba(0,0,0,0.7)'} func={handlePlayVoice}/>
                         </View>
                     {status && <Text className='text-[10px] tracking-wide text-slate-100/50'>{item.user}</Text>}
                     </View>

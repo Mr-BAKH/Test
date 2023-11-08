@@ -28,7 +28,7 @@ const Messaging = ({ route, navigation }) => {
     const [message, setMessage] = useState("");
     const [user, setUser] = useState('');
     const [isRecordVoice, setIsRecordVoice] = useState(false)
-    const [voice, setVioce] = useState<any>()
+    const [voice, setVoice] = useState<any>()
     const [voicePath, setVoicePath] = useState<any>('')
     const [showPlayVoice,setShowPlayVoice] = useState(false)
     const [progressVoice,setProgressVoice] = useState(0)
@@ -93,7 +93,7 @@ const Messaging = ({ route, navigation }) => {
             }catch(e){
                 console.log('Read file from the RNFS')
             }
-            setVioce(undefined)
+            setVoice(undefined)
         }
         // if client dont sent anythings
         if((message.length == 0 || voice == undefined)&& type == ''){
@@ -134,7 +134,7 @@ const Messaging = ({ route, navigation }) => {
             setShowPlayVoice(true)
             setProgressVoice(0)
 
-            // setVioce(audioRecorderPlayer)
+            // setVoice(audioRecorderPlayer)
 
         }).catch(e=> console.log("ERROR in stop:",e))
 
@@ -170,14 +170,14 @@ const Messaging = ({ route, navigation }) => {
             }else{
                 rej('ERROR in recording!')
             }
-            // setVioce(audioRecorderPlayer)
+            // setVoice(audioRecorderPlayer)
             // setIsRecordVoice(!isRecordVoice)
         })
         .then(val => {
             console.log("promise Responce from Start Recording >>>",val)
             setIsRecordVoice(!isRecordVoice)
-            setVioce(audioRecorderPlayer)
-            // setVioce(val)
+            setVoice(audioRecorderPlayer)
+            // setVoice(val)
         })
         .catch(error => console.log("ERROR in Recording Voice!",error))
 
@@ -185,24 +185,21 @@ const Messaging = ({ route, navigation }) => {
     }
 
     const handlePlayVoice = async (): Promise<void> => {
-    
-        try {
-          const msg = await voice.startPlayer(voicePath);
-    
-          //? Default path
-          const volume = await voice.setVolume(1.0);
-        //   console.log(`path: ${msg}`, `volume: ${volume}`);
-    
-          voice.addPlayBackListener((e: PlayBackType) => {
-            // console.log('playBackListener', e);
-            setProgressVoice(e.currentPosition/e.duration)
-            if(e.currentPosition/e.duration == 1) {
-                setProgressVoice(0)            
+        if(voice && !isRecordVoice){
+            try {
+              await voice.startPlayer(voicePath);
+              voice.addPlayBackListener((e: PlayBackType) => {
+                setProgressVoice(e.currentPosition/e.duration)
+                if(e.currentPosition/e.duration == 1) {
+                    setTimeout(() => {
+                        setProgressVoice(0)            
+                    }, 500);
+                }
+                // console.log(progress)
+              });
+            } catch (err) {
+              console.log('startPlayer error', err);
             }
-            // console.log(progress)
-          });
-        } catch (err) {
-          console.log('startPlayer error', err);
         }
       };
 
@@ -218,7 +215,7 @@ const Messaging = ({ route, navigation }) => {
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={{padding:15, paddingBottom:70}}
                         renderItem={({ item }) => (
-                            <MessageComponent item={item} user={user} />
+                            <MessageComponent item={item} user={user} isrecording={isRecordVoice} voice={voice} setVoice={setVoice} />
                         )}
                         keyExtractor={(item) => item.id}
                     />
@@ -229,22 +226,31 @@ const Messaging = ({ route, navigation }) => {
                     !isRecordVoice && voice !== undefined && voicePath!== '' && showPlayVoice &&
                         <View  
                             style={{shadowColor:'darkred'}}
-                            className='flex-row bg-gray-900/90  rounded-full backdrop-blur-lg p-[5px] shadow-md absolute w-[75%] items-center justify-end bottom-[77px]'
+                            className='flex-row bg-gray-900/90  rounded-full backdrop-blur-lg p-[5px] shadow-md absolute w-fit items-center justify-end bottom-[77px]'
                         >
-                            <Progress.Bar 
-                            className='absolute left-3'
-                            width={wp('62%')}
-                            height={5}
-                            color={progressVoice == 0 ?'rgba(0,0,0,0.5)':'darkred'} 
-                            borderWidth={0}
-                            progress={progressVoice ==0 ? 1:progressVoice} 
-                            //   progress={1} 
-                            indeterminateAnimationDuration={500}
-                            />
+                            <View className='jutify-center items-center ml-[10px]'>
+                                <Progress.Bar 
+                                    width={wp('50%')}
+                                    height={5}
+                                    color={'rgba(255,255,255,0.1)'} 
+                                    borderWidth={0}
+                                    progress={1} 
+                                    className='absolute'
+                                />
+                                <Progress.Bar 
+                                width={wp('50%')}
+                                height={5}
+                                color={progressVoice > 0  ?'rgba(0,0,0,0.9)':'transparent'} 
+                                borderWidth={0}
+                                progress={progressVoice > 0 ? progressVoice:0} 
+                                indeterminateAnimationDuration={1000}
+                                />
+
+                            </View>
                             <Icon_Botton icon={progressVoice !== 0? faPause :faPlay} color={'darkred'} func={handlePlayVoice}/>
                             {/* cancel icon */}
-                            <View className='absolute right-[-15%] bg-gray-900/90 rounded-full justify-center items-center'>
-                                <Icon_Botton icon={faXmark} color={'darkred'} func={()=>setVioce(undefined)}/>
+                            <View className='absolute right-[-20%] bg-gray-900/90 rounded-full justify-center items-center'>
+                                <Icon_Botton icon={faXmark} color={'darkred'} func={()=>setVoice(undefined)}/>
                             </View>
                         </View>
                 }
