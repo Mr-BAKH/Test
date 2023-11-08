@@ -203,6 +203,10 @@ const Messaging = ({ route, navigation }) => {
         }
       };
 
+    const handleCamera = ()=>{
+        console.log('use Camera!')
+    }
+
     return (
         <View   
             className='flex-1 bg-white'
@@ -269,7 +273,7 @@ const Messaging = ({ route, navigation }) => {
                         style={{gap:10}}
                         className='flex-row w-fit'
                     >
-                        <Icon_Botton activeShadow={false} colorShadow={''} icon={faCamera} color={'rgba(255,255,255,0.5)'} func={()=>console.log('useCamera!')}/>
+                        <Icon_Botton activeShadow={false} colorShadow={''} icon={faCamera} color={'rgba(255,255,255,0.5)'} func={handleCamera}/>
                         <Icon_Botton activeShadow={isRecordVoice&& true} colorShadow={'red'} icon={isRecordVoice? faStop:faMicrophoneLines} color={isRecordVoice?'darkred':'rgba(255,255,255,0.5)'} func={handleRecordVoice}/>
                         <Icon_Botton backColor={'purple'}  activeShadow={true} colorShadow={''} icon={faPaperPlane} color={'white'} func={handleNewMessage}/>
                     </View>
