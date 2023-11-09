@@ -52,7 +52,7 @@ export default function MessageComponent({ item, user,setVoice, voice, isrecordi
 
 
     const handlePlayVoice = async (): Promise<void> => {
-        
+
         if(pathAudio !== ''&& !isActive && voice === undefined && !isrecording){
             setVoice(undefined); // clear chat room audio class
             SetIsActive(true)
