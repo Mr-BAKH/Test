@@ -1,6 +1,7 @@
 import React, { useLayoutEffect, useState, useEffect, useMemo } from "react";
-import { View, TextInput, Text, FlatList, Pressable,Platform,Alert } from "react-native";
+import { View, TextInput,Image, Text, FlatList, Pressable,Platform,Alert } from "react-native";
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import * as Progress from 'react-native-progress';
 import AudioRecorderPlayer, {
     AVEncoderAudioQualityIOSType,
@@ -32,6 +33,10 @@ const Messaging = ({ route, navigation }) => {
     const [voicePath, setVoicePath] = useState<any>('')
     const [showPlayVoice,setShowPlayVoice] = useState(false)
     const [progressVoice,setProgressVoice] = useState(0)
+    // set camera state
+    const [photo,setPhoto] = useState<string>('')
+    const [photoFile,setPhotoFile] = useState<string>('')
+    const [showImage, setShowImage]= useState<boolean>(false);// default is fualse
 
     const { name, id, username } = route.params;
     
@@ -94,6 +99,20 @@ const Messaging = ({ route, navigation }) => {
                 console.log('Read file from the RNFS')
             }
             setVoice(undefined)
+        }
+        if(message.length ==0 && voice == undefined && photoFile !== ''){
+            type ='PHOTO';
+            if(photo){
+                socket.emit("newMessage", {
+                    message: photoFile,
+                    room_id: id,
+                    user,
+                    type: type ,
+                    timestamp: { hour, mins },
+                });
+            }
+            // clear photo and show photo
+            setPhoto('');setShowImage(false)
         }
         // if client dont sent anythings
         if((message.length == 0 || voice == undefined)&& type == ''){
@@ -203,8 +222,30 @@ const Messaging = ({ route, navigation }) => {
         }
       };
 
-    const handleCamera = ()=>{
-        console.log('use Camera!')
+    const handleCamera = async(): Promise<void> =>{
+        try{
+            const result = await launchCamera(
+                {
+                    mediaType:'photo',
+                    includeBase64:true,
+                    quality: 0.2 // set quality of the image
+                },
+            );
+            if(result.assets[0]){
+                // console.log(result.assets[0].originalPath)
+                RNFS.writeFile(result.assets[0].uri, result.assets[0].base64,'base64')
+                .then(val =>
+                    console.log(val)
+                ).catch(e =>{
+                    console.log('Error in reading file',e)
+                })
+                setShowImage(true)
+                setPhoto(result.assets[0].uri);
+                setPhotoFile(result.assets[0].base64);
+            }
+        }catch(e){
+            console.log('ERROR in lunch camrea!',e)
+        }
     }
 
     return (
@@ -225,7 +266,7 @@ const Messaging = ({ route, navigation }) => {
                     />
                 )}
                 </View>
-                {/* controll botton */}
+                {/* Voice Preview */}
                 {
                     !isRecordVoice && voice !== undefined && voicePath!== '' && showPlayVoice &&
                         <View  
@@ -258,6 +299,20 @@ const Messaging = ({ route, navigation }) => {
                             </View>
                         </View>
                 }
+                {/* image preview */}
+                {showImage && 
+                    <View  
+                    style={{shadowColor:'black',width:wp(60),height:wp(60)}}
+                    className='flex-row overflow-hidden bg-gray-900/90  rounded-full backdrop-blur-lg p-[5px] shadow-md absolute w-fit items-center justify-end bottom-[100px]'
+                    >
+                        <Image
+                          source={photo?{uri: photo}:require('../assets/image/mercedes-maybach-s-class-haute-voiture.jpg')}
+                          className='w-full h-full'
+                          resizeMode="cover"
+                        />
+                    </View>
+                }
+                {/* controll botton and inpute */}
                 <View
                     style={{shadowColor:'purple'}}
                     className='flex-row px-[15px] absolute bottom-5 w-[90%] shadow-md rounded-3xl bg-purple-950 justify-center items-center'

@@ -4,7 +4,7 @@ import React from "react";
 import Login from "../screens/Login";
 import Chat from "../screens/Chat";
 import Messaging from "../screens/Messaging";
-// import Camera from '../screens/Test'
+import Test from '../screens/Test'
 
 //👇🏻 React Navigation configurations
 import { NavigationContainer } from "@react-navigation/native";
@@ -16,11 +16,17 @@ export default function App() {
     return (
         <NavigationContainer>
             <Stack.Navigator
+                // initialRouteName="Test"
                 initialRouteName="Login"
             >
                 <Stack.Screen
                     name='Login'
                     component={Login}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name='Test'
+                    component={Test}
                     options={{ headerShown: false }}
                 />
                

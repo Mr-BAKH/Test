@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, Image } from "react-native";
 import React,{useEffect,useState} from "react";
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faUser} from '@fortawesome/free-solid-svg-icons';
@@ -20,26 +20,36 @@ import {faPlay,faXmark,faPause} from '@fortawesome/free-solid-svg-icons';
 
 export default function MessageComponent({ item, user,setVoice, voice, isrecording }) {
     const status = item.user !== user;    
-    const boxStyle=  status? 'rounded-bl-[0px] bg-purple-300': 'rounded-br-[0px] bg-sky-200'
-    const boxStyleVoice=  status? 'rounded-bl-[0px] bg-purple-700': 'rounded-br-[0px] bg-sky-700'
     const [pathAudio, setPathAudio] = useState<string>('')
+    const [pathPhoto, setPathPhoto] = useState<string>('')
     const [progressVoice, setProgressVoice] = useState<number>(0)
     const [isActive, SetIsActive] = useState<boolean>(false)
-
+    
+    const boxStyle=  status? 'rounded-bl-[0px] bg-purple-300': 'rounded-br-[0px] bg-sky-200'
+    const boxStyleVoice=  status? 'rounded-bl-[0px] bg-purple-700': 'rounded-br-[0px] bg-sky-700'
+    const boxStylePhoto=  status? 'rounded-bl-[0px] bg-purple-950': 'rounded-br-[0px] bg-sky-950'
 
     useEffect(()=>{
-        if(item.type === 'VOICE'){
-            const filePath = RNFS.DocumentDirectoryPath + `/${item.id}.mp3`;
+        if(item.type === 'VOICE' || item.type === "PHOTO"){
+            const filePath = RNFS.DocumentDirectoryPath+(item.type =='VOICE'?`/${item.id}.mp3`: `/${item.id}.jpg`);
+
             RNFS.writeFile(filePath, item.text, 'base64')
             .then(() => {
-                // console.log('Audio file saved to:', filePath);
-                setPathAudio(filePath)
+                if(item.type === "VOICE"){
+                    setPathAudio(filePath)
+                    console.log('write audio file in  >> ',filePath)
+                }else{
+                    setPathPhoto('file://'+filePath)
+                    console.log('write photo file in  >> ','file://'+filePath)
+                }
             })
             .catch((error) => {
                 console.error('Error saving audio file:', error);
             });
         }
     },[])
+
+
 
     const handlePlayVoice = async (): Promise<void> => {
         if(pathAudio !== ''&& !isActive && voice === undefined && !isrecording){
@@ -124,6 +134,31 @@ export default function MessageComponent({ item, user,setVoice, voice, isrecordi
                 </View>
                 <Text className='text-xs'>{item.time}</Text>
             </>
+            }
+            {item?.type === "PHOTO" &&
+            <>
+            <View className={`flex-row items-end`}>
+                {status &&<FontAwesomeIcon style={{marginBottom:5}} icon={faUser} size={15} color={'gray'}/>}
+                <View
+                    className={`overflow-hidden shadow-lg rounded-lg  mb-1 ${boxStyleVoice}`}
+                >
+                <Image
+                    source={
+                        pathPhoto?
+                        {uri:pathPhoto}
+                        :
+                        require('../assets/image/mercedes-maybach-s-class-haute-voiture.jpg')
+                    }
+                    style={{width:wp(70),height:wp(70)}}
+                    resizeMode="cover"
+                    />
+                {/* <Text className='text-[16px]'>{item.text}</Text> */}
+                {status && <Text className='text-[10px] bg-purple-950/70 absolute left-2 top-2  p-1 px-3 rounded-lg tracking-wide text-white'>{item.user}</Text>}
+
+                </View>
+            </View>
+            <Text className='text-xs'>{item.time}</Text>
+        </>
             }
             </View>
            
