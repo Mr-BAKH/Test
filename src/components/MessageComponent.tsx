@@ -52,6 +52,7 @@ export default function MessageComponent({ item, user,setVoice, voice, isrecordi
 
 
     const handlePlayVoice = async (): Promise<void> => {
+        
         if(pathAudio !== ''&& !isActive && voice === undefined && !isrecording){
             setVoice(undefined); // clear chat room audio class
             SetIsActive(true)
@@ -59,8 +60,9 @@ export default function MessageComponent({ item, user,setVoice, voice, isrecordi
             try {
                 await voice.startPlayer(pathAudio);
                 voice.addPlayBackListener((e: PlayBackType) => {
-                  setProgressVoice(e.currentPosition/e.duration)
-                    if(e.currentPosition/e.duration == 1) {
+                  setProgressVoice(Math.round(e.currentPosition/e.duration*100)/100)
+                    if(Math.ceil(e.currentPosition/e.duration*100)/100 == 1) {
+                        console.log('clear!')
                         setProgressVoice(0);  
                         SetIsActive(false)          
                     }

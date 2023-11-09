@@ -184,8 +184,8 @@ const Messaging = ({ route, navigation }) => {
             if(result){
                 res(result)
                 audioRecorderPlayer.addRecordBackListener((e: RecordBackType) => {
-                    console.log('bakhListener>>>',e.currentPosition,audioRecorderPlayer.mmssss(
-                        Math.floor(e.currentPosition)))
+                    // console.log('bakhListener>>>',e.currentPosition,audioRecorderPlayer.mmssss(
+                    //     Math.floor(e.currentPosition)))
                 });
             }else{
                 rej('ERROR in recording!')
