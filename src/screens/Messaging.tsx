@@ -115,7 +115,7 @@ const Messaging = ({ route, navigation }) => {
             setPhoto('');setShowImage(false)
         }
         // if client dont sent anythings
-        if((message.length == 0 || voice == undefined)&& type == ''){
+        if((message.length == 0 || photoFile == ''|| voice == undefined)&& type == ''){
             console.log(message.length,voice,type);
             Alert.alert("send something!");
         }
@@ -135,6 +135,7 @@ const Messaging = ({ route, navigation }) => {
         }else{
             setMessage('');
         }
+        setPhoto('');setPhotoFile('')
         
     }
 
@@ -223,26 +224,33 @@ const Messaging = ({ route, navigation }) => {
       };
 
     const handleCamera = async(): Promise<void> =>{
+        // clear all input
+        setMessage('');
+        if(voice){
+            stopRecordingVoice();
+            setVoice(undefined);
+        }
         try{
-            const result = await launchCamera(
+            await launchCamera(
                 {
                     mediaType:'photo',
                     includeBase64:true,
                     quality: 0.2 // set quality of the image
                 },
-            );
-            if(result.assets[0]){
-                // console.log(result.assets[0].originalPath)
-                RNFS.writeFile(result.assets[0].uri, result.assets[0].base64,'base64')
-                .then(val =>
-                    console.log(val)
-                ).catch(e =>{
-                    console.log('Error in reading file',e)
-                })
-                setShowImage(true)
-                setPhoto(result.assets[0].uri);
-                setPhotoFile(result.assets[0].base64);
-            }
+            ).then(val=>{
+                if(val.assets[0]){
+                    // console.log(result.assets[0].originalPath)
+                    RNFS.writeFile(val.assets[0].uri, val.assets[0].base64,'base64')
+                    .then(() =>
+                        console.log('write file successfully!')
+                    ).catch(e =>{
+                        console.log('Error in reading file',e)
+                    })
+                    setShowImage(true)
+                    setPhoto(val.assets[0].uri);
+                    setPhotoFile(val.assets[0].base64);
+                }
+            })
         }catch(e){
             console.log('ERROR in lunch camrea!',e)
         }
@@ -300,16 +308,22 @@ const Messaging = ({ route, navigation }) => {
                         </View>
                 }
                 {/* image preview */}
-                {showImage && 
+                {showImage && photoFile && photo  && 
                     <View  
                     style={{shadowColor:'black',width:wp(60),height:wp(60)}}
-                    className='flex-row overflow-hidden bg-gray-900/90  rounded-full backdrop-blur-lg p-[5px] shadow-md absolute w-fit items-center justify-end bottom-[100px]'
+                    className='flex-row overflow-hidden bg-white  rounded-lg object-cover backdrop-blur-lg  shadow-md p-2 pb-5 absolute w-fit items-center justify-end bottom-[80px]'
                     >
+                      <View className= 'w-full h-full relative'>
                         <Image
                           source={photo?{uri: photo}:require('../assets/image/mercedes-maybach-s-class-haute-voiture.jpg')}
                           className='w-full h-full'
-                          resizeMode="cover"
+                        //   resizeMode="cover"
                         />
+                         {/* cancel icon */}
+                         <View className='absolute right-1 top-1 bg-gray-900/90 rounded-full justify-center items-center'>
+                            <Icon_Botton icon={faXmark} color={'darkred'} func={()=>{setPhoto('');setPhotoFile('')}}/>
+                        </View>
+                      </View>
                     </View>
                 }
                 {/* controll botton and inpute */}
@@ -330,7 +344,7 @@ const Messaging = ({ route, navigation }) => {
                     >
                         <Icon_Botton activeShadow={false} colorShadow={''} icon={faCamera} color={'rgba(255,255,255,0.5)'} func={handleCamera}/>
                         <Icon_Botton activeShadow={isRecordVoice&& true} colorShadow={'red'} icon={isRecordVoice? faStop:faMicrophoneLines} color={isRecordVoice?'darkred':'rgba(255,255,255,0.5)'} func={handleRecordVoice}/>
-                        <Icon_Botton backColor={'purple'}  activeShadow={true} colorShadow={''} icon={faPaperPlane} color={'white'} func={handleNewMessage}/>
+                       {!isRecordVoice && <Icon_Botton backColor={'purple'}  activeShadow={true} colorShadow={''} icon={faPaperPlane} color={'white'} func={handleNewMessage}/>}
                     </View>
             </View>
             </View>

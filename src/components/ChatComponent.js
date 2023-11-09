@@ -8,13 +8,15 @@ import { styles } from "../utils/styles";
 
 const ChatComponent = ({ item, username }) => {
     const navigation = useNavigation();
-    const [messages, setMessages] = useState({});
+    const [messages, setMessages] = useState();
     const [lastuser, setLastUser] = useState('')
 
     //👇🏻 Retrieves the last message in the array from the item prop
     useMemo(() => {
-        setMessages(item.messages[item.messages.length - 1]);
-        setLastUser(item.messages[item.messages.length - 1].user)
+        if(item.messages[item.messages.length - 1]){
+            setMessages(item.messages[item.messages.length - 1]);
+            setLastUser(item.messages[item.messages.length - 1].user)
+        }
     },[item]);
 
     ///👇🏻 Navigates to the Messaging screen
@@ -39,7 +41,7 @@ const ChatComponent = ({ item, username }) => {
                         {messages?.type === 'VOICE'&& `voice from ${lastuser}`}
                         {messages?.type === 'PHOTO'&& `photo from ${lastuser}`}
                         {messages?.type === 'TEXT'&& (messages.text?.length > 15? messages.text.slice(0,15)+'...': messages.text)+` from ${lastuser}`}
-                        {!messages && "Tap to start chatting" }
+                        {messages== undefined && "Tap to start chatting" }
                     </Text>
                 </View>
                 <View>

@@ -25,11 +25,12 @@ socket.on("roomsList", async(data) => {
 
 const Chat = ({route}) => {
     
-    const { username } = route.params;
     const [visible, setVisible] = React.useState(false); //default false
     const [rooms, setRooms] = useState([]);
     
     let socketRead = socket;
+    const {username} = route.params;
+
     useMemo(()=>{
         socket.on("roomsList", async(data) => {
             let trust = await data;
