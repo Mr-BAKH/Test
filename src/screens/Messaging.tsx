@@ -48,7 +48,7 @@ const Messaging = ({ route, navigation }) => {
         setUser(username)
     }, []);
 
-    useEffect(() => {
+    useMemo(() => {
         socket.on("foundRoom", (roomChats) => {
             setChatMessages(roomChats);
         });

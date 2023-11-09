@@ -37,10 +37,10 @@ export default function MessageComponent({ item, user,setVoice, voice, isrecordi
             .then(() => {
                 if(item.type === "VOICE"){
                     setPathAudio(filePath)
-                    console.log('write audio file in  >> ',filePath)
+                    // console.log('write audio file in  >> ',filePath)
                 }else{
                     setPathPhoto('file://'+filePath)
-                    console.log('write photo file in  >> ','file://'+filePath)
+                    // console.log('write photo file in  >> ','file://'+filePath)
                 }
             })
             .catch((error) => {

@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from "react-native";
-import React, { useLayoutEffect, useState } from "react";
+import React, { useLayoutEffect, useState, useMemo } from "react";
 import {faUser} from '@fortawesome/free-solid-svg-icons';
 import {Icon_Botton} from './Botton'
 // import { Ionicons } from "@expo/vector-icons";
@@ -9,11 +9,13 @@ import { styles } from "../utils/styles";
 const ChatComponent = ({ item, username }) => {
     const navigation = useNavigation();
     const [messages, setMessages] = useState({});
+    const [lastuser, setLastUser] = useState('')
 
     //👇🏻 Retrieves the last message in the array from the item prop
-    useLayoutEffect(() => {
+    useMemo(() => {
         setMessages(item.messages[item.messages.length - 1]);
-    }, []);
+        setLastUser(item.messages[item.messages.length - 1].user)
+    },[item]);
 
     ///👇🏻 Navigates to the Messaging screen
     const handleNavigation = () => {
@@ -34,7 +36,10 @@ const ChatComponent = ({ item, username }) => {
 
                     <Text style={styles.cusername}>{item.roomName}</Text>
                     <Text style={styles.cmessage}>
-                        {messages? messages?.type === 'VOICE'? 'voice': (messages.text?.length > 20? messages.text.slice(0,20)+'...': messages.text) : "Tap to start chatting"}
+                        {messages?.type === 'VOICE'&& `voice from ${lastuser}`}
+                        {messages?.type === 'PHOTO'&& `photo from ${lastuser}`}
+                        {messages?.type === 'TEXT'&& (messages.text?.length > 15? messages.text.slice(0,15)+'...': messages.text)+` from ${lastuser}`}
+                        {!messages && "Tap to start chatting" }
                     </Text>
                 </View>
                 <View>
