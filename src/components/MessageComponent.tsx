@@ -23,6 +23,8 @@ export default function MessageComponent({ item, user,setVoice, voice, isrecordi
     const status = item.user !== user;    
     const [pathAudio, setPathAudio] = useState<string>('')
     const [pathPhoto, setPathPhoto] = useState<string>('')
+    const [pathVideo, setPathVideo] = useState<string>('')
+
     const [progressVoice, setProgressVoice] = useState<number>(0)
     const [isActive, SetIsActive] = useState<boolean>(false)
 
@@ -32,15 +34,18 @@ export default function MessageComponent({ item, user,setVoice, voice, isrecordi
     const boxStyleVideo=  status? 'rounded-bl-[0px] bg-purple-600': 'rounded-br-[0px] bg-sky-600'
 
     useEffect(()=>{
-        if(item.type === 'VOICE' || item.type === "PHOTO"){
-            const filePath = RNFS.DocumentDirectoryPath+(item.type =='VOICE'?`/${item.id}.mp3`: `/${item.id}.jpg`);
-
+        if(item.type === 'VOICE' || item.type === "PHOTO" || item.type === 'VIDEO'){
+            const filePath = RNFS.DocumentDirectoryPath+(item.type =='VOICE'?`/${item.id}.mp3`:( item.type == 'PHOTO'?`/${item.id}.jpg` : `/${item.id}.mp4`));
             RNFS.writeFile(filePath, item.text, 'base64')
             .then(() => {
                 if(item.type === "VOICE"){
                     setPathAudio(filePath)
                     // console.log('write audio file in  >> ',filePath)
-                }else{
+                }else if(item.type === "VIDEO"){
+                    console.log('file://'+filePath)
+                    setPathVideo('file://'+filePath)
+                }
+                else{
                     setPathPhoto('file://'+filePath)
                     // console.log('write photo file in  >> ','file://'+filePath)
                 }
@@ -176,7 +181,7 @@ export default function MessageComponent({ item, user,setVoice, voice, isrecordi
                          className='shadow-sm'
                        >
                         {/* video component <<<< */}
-                            <VedioComponent/>
+                            <VedioComponent path={pathVideo}/>
                          {/* <Icon_Botton activeShadow={true} backColor={'#eeeeee'} colorShadow={''} icon={progressVoice !==0 && isActive ? faPause :faPlay} color={'rgba(0,0,0,0.7)'} func={handlePlayVoice}/> */}
                      </View>
                      {status && <Text className='text-[10px] bg-purple-950/70 absolute left-2 top-2  p-1 px-3 rounded-lg tracking-wide text-white'>{item.user}</Text>}

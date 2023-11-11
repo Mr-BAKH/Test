@@ -20,6 +20,7 @@ import {faPaperPlane,faVideo,faCamera,faStop,faMicrophoneLines,faPlay,faXmark,fa
 import socket from "../utils/socket";
 import {Icon_Botton} from '../components/Botton'
 import MessageComponent from "../components/MessageComponent";
+import {fileToBase64} from '../utils/blob'
 
 const Messaging = ({ route, navigation }) => {
 
@@ -39,6 +40,7 @@ const Messaging = ({ route, navigation }) => {
     const [showImage, setShowImage]= useState<boolean>(false);// default is fualse
     //set video state
     const [video,setVideo] = useState<string>('')
+    const [videoFile,setVideoFile] = useState<string>('')
     const [showVideo, setShowVideo]= useState<boolean>(false);// default
 
     const { name, id, username } = route.params;
@@ -117,10 +119,10 @@ const Messaging = ({ route, navigation }) => {
             // clear photo and show photo
             setPhoto('');setShowImage(false)
         }
-        if(message.length ==0 && voice == undefined && photoFile == '' && video !== ''){
+        if(message.length ==0 && voice == undefined && photoFile == '' && videoFile !== ''){
             type ='VIDEO';
             socket.emit("newMessage", {
-                message: "Video",
+                message: videoFile,
                 room_id: id,
                 user,
                 type: type ,
@@ -128,9 +130,10 @@ const Messaging = ({ route, navigation }) => {
             });
             // clear video state
             setVideo('')
+            setVideoFile('')
         }
         // if client dont sent anythings
-        if((message.length == 0 || photoFile == ''|| voice == undefined)&& type == ''){
+        if((message.length == 0 || photoFile == ''|| voice == undefined) && type == ''){
             console.log(message.length,voice,type);
             Alert.alert("send something!");
         }
@@ -273,35 +276,30 @@ const Messaging = ({ route, navigation }) => {
     const handleVideoRecord = async(): Promise<void> =>{
         // clear all input
         setMessage('');
+        setPhoto('');setPhotoFile('');setShowImage(false);
         if(voice){
             stopRecordingVoice();
             setVoice(undefined);
         }
+
         try{
             await launchCamera(
                 {
                     mediaType:'video',
                     // includeBase64:true,
                     videoQuality:'low',
-                    durationLimit:3000,
-                    quality: 0.2 // set quality of the image
+                    // durationLimit:3000,
+                    // quality: 0.2 // set quality of the image
                 },
-            ).then((val:any)=>{
+            ).then(async(val:any)=>{
                 if(val.assets[0].uri){
-                    console.log(val.assets[0].uri)
-                    RNFS.readDir(val.assets[0].uri)
-                    .then((result)=>{console.log(result)})
-                    .catch((err) => console.log('Erron in reading the file >>>',err))
-                    // console.log(result.assets[0].originalPath)
-                    // RNFS.writeFile(val.assets[0].uri, val.assets[0].base64,'base64')
-                    // .then(() =>
-                    //     console.log('write file successfully!')
-                    // ).catch(e =>{
-                    //     console.log('Error in reading file',e)
-                    // })
-                    // setShowImage(true)
-                    // setPhoto(val.assets[0].uri);
-                    // setPhotoFile(val.assets[0].base64);
+                    const file = await fileToBase64(val.assets[0].uri);
+                    // console.log(file)
+                    if(file){
+                        setVideoFile(file)
+                    }else{
+                        console.log('video file is not useable <<<')
+                    }
                 }
             })
         }catch(e){
