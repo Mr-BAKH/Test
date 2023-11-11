@@ -1,6 +1,6 @@
 import Video, {VideoRef} from 'react-native-video';
 import { useEffect, useRef,useState,useMemo } from 'react';
-import { StyleSheet, View, Text,Image } from 'react-native';
+import { StyleSheet, View, Text,Image,ImageBackground } from 'react-native';
 import {Icon_Botton} from '../components/Botton'
 import {faPause, faPlay} from '@fortawesome/free-solid-svg-icons';
 
@@ -26,19 +26,21 @@ export default function VideoPlayer({path}){
     className='flex-1 relative justify-center items-center'
   >
     {/* controll button */}
-    <View className='absolute z-10'>
-      <Icon_Botton backColor={'rgba(0,0,0,0.1)'} icon={pauseState? faPlay: faPause} func={()=>setPause(!pauseState)}/>
+    <View className='absolute z-20'>
+      <Icon_Botton color={"#eee"} backColor={'rgba(0,0,0,0.2)'} icon={pauseState? faPlay: faPause} func={()=>setPause(!pauseState)}/>
     </View>
     {/*  */}
     {!displayReady  && 
-    <View className='absolute z-10 bottom-10'>
-      <Text>Tap to play video!</Text>
-    </View>
+    <ImageBackground
+      source={require('../assets/image/mercedes-maybach-s-class-haute-voiture.jpg')}
+      className='w-full h-full bg-red-200 absolute z-10 justify-end items-center'>
+      <Text className='backdrop-blur-lg font-bold text-white mb-5 p-4 px-3 bg-black/10 rounded-full'>Tap to play video!</Text>
+    </ImageBackground>
     }  
    <Video 
     // Can be a URL or a local file.
     className='w-full h-full'
-    source={background2? background2: background}
+    source={background2}
     // source={background}
     // controls={true}
     paused={pauseState} // default is true 
@@ -46,7 +48,8 @@ export default function VideoPlayer({path}){
     muted={false}
     rate={1}
     fullScreen={true}
-    poster={'https://s3-prod-europe.autonews.com/s3fs-public/styles/1024x512/public/Maybach%20S%20Class%20web.jpg'}
+    // posterResizeMode='cover'
+    // poster={'https://s3-prod-europe.autonews.com/s3fs-public/styles/1024x512/public/Maybach%20S%20Class%20web.jpg'}
     // paused={true}
 
     // Callback when remote video is buffering                                      
