@@ -16,7 +16,7 @@ import AudioRecorderPlayer, {
     RecordBackType,
   } from 'react-native-audio-recorder-player';
 import RNFS from 'react-native-fs';
-import {faPaperPlane,faCamera,faStop,faMicrophoneLines,faPlay,faXmark,faPause} from '@fortawesome/free-solid-svg-icons';
+import {faPaperPlane,faVideo,faCamera,faStop,faMicrophoneLines,faPlay,faXmark,faPause} from '@fortawesome/free-solid-svg-icons';
 import socket from "../utils/socket";
 import {Icon_Botton} from '../components/Botton'
 import MessageComponent from "../components/MessageComponent";
@@ -37,6 +37,9 @@ const Messaging = ({ route, navigation }) => {
     const [photo,setPhoto] = useState<string>('')
     const [photoFile,setPhotoFile] = useState<string>('')
     const [showImage, setShowImage]= useState<boolean>(false);// default is fualse
+    //set video state
+    const [video,setVideo] = useState<string>('')
+    const [showVideo, setShowVideo]= useState<boolean>(false);// default
 
     const { name, id, username } = route.params;
     
@@ -113,6 +116,18 @@ const Messaging = ({ route, navigation }) => {
             }
             // clear photo and show photo
             setPhoto('');setShowImage(false)
+        }
+        if(message.length ==0 && voice == undefined && photoFile == '' && video !== ''){
+            type ='VIDEO';
+            socket.emit("newMessage", {
+                message: "Video",
+                room_id: id,
+                user,
+                type: type ,
+                timestamp: { hour, mins },
+            });
+            // clear video state
+            setVideo('')
         }
         // if client dont sent anythings
         if((message.length == 0 || photoFile == ''|| voice == undefined)&& type == ''){
@@ -255,7 +270,50 @@ const Messaging = ({ route, navigation }) => {
             console.log('ERROR in lunch camrea!',e)
         }
     }
+    const handleVideoRecord = async(): Promise<void> =>{
+        // clear all input
+        setMessage('');
+        if(voice){
+            stopRecordingVoice();
+            setVoice(undefined);
+        }
+        try{
+            await launchCamera(
+                {
+                    mediaType:'video',
+                    // includeBase64:true,
+                    videoQuality:'low',
+                    durationLimit:3000,
+                    quality: 0.2 // set quality of the image
+                },
+            ).then((val:any)=>{
+                if(val.assets[0].uri){
+                    console.log(val.assets[0].uri)
+                    RNFS.readDir(val.assets[0].uri)
+                    .then((result)=>{console.log(result)})
+                    .catch((err) => console.log('Erron in reading the file >>>',err))
+                    // console.log(result.assets[0].originalPath)
+                    // RNFS.writeFile(val.assets[0].uri, val.assets[0].base64,'base64')
+                    // .then(() =>
+                    //     console.log('write file successfully!')
+                    // ).catch(e =>{
+                    //     console.log('Error in reading file',e)
+                    // })
+                    // setShowImage(true)
+                    // setPhoto(val.assets[0].uri);
+                    // setPhotoFile(val.assets[0].base64);
+                }
+            })
+        }catch(e){
+            console.log('ERROR in lunch Video Record!',e)
+        }
+    }
 
+    //test function 
+    const handleVideo = ()=>{
+        console.log('handle video');
+        setVideo('this is a video')
+    }
     return (
         <View   
             className='flex-1 bg-white'
@@ -342,6 +400,7 @@ const Messaging = ({ route, navigation }) => {
                         style={{gap:10}}
                         className='flex-row w-fit'
                     >
+                        <Icon_Botton activeShadow={false} colorShadow={''} icon={faVideo} color={'rgba(255,255,255,0.5)'} func={handleVideoRecord}/>
                         <Icon_Botton activeShadow={false} colorShadow={''} icon={faCamera} color={'rgba(255,255,255,0.5)'} func={handleCamera}/>
                         <Icon_Botton activeShadow={isRecordVoice&& true} colorShadow={'red'} icon={isRecordVoice? faStop:faMicrophoneLines} color={isRecordVoice?'darkred':'rgba(255,255,255,0.5)'} func={handleRecordVoice}/>
                        {!isRecordVoice && <Icon_Botton backColor={'purple'}  activeShadow={true} colorShadow={''} icon={faPaperPlane} color={'white'} func={handleNewMessage}/>}

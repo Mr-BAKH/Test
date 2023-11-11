@@ -16,6 +16,7 @@ import * as Progress from 'react-native-progress';
 import {Icon_Botton} from './Botton'
 import RNFS from 'react-native-fs';
 import {faPlay,faXmark,faPause} from '@fortawesome/free-solid-svg-icons';
+import VedioComponent from './Video'
 
 
 export default function MessageComponent({ item, user,setVoice, voice, isrecording }) {
@@ -24,10 +25,11 @@ export default function MessageComponent({ item, user,setVoice, voice, isrecordi
     const [pathPhoto, setPathPhoto] = useState<string>('')
     const [progressVoice, setProgressVoice] = useState<number>(0)
     const [isActive, SetIsActive] = useState<boolean>(false)
-    
+
     const boxStyle=  status? 'rounded-bl-[0px] bg-purple-300': 'rounded-br-[0px] bg-sky-200'
     const boxStyleVoice=  status? 'rounded-bl-[0px] bg-purple-700': 'rounded-br-[0px] bg-sky-700'
     const boxStylePhoto=  status? 'rounded-bl-[0px] bg-purple-950': 'rounded-br-[0px] bg-sky-950'
+    const boxStyleVideo=  status? 'rounded-bl-[0px] bg-purple-600': 'rounded-br-[0px] bg-sky-600'
 
     useEffect(()=>{
         if(item.type === 'VOICE' || item.type === "PHOTO"){
@@ -142,7 +144,7 @@ export default function MessageComponent({ item, user,setVoice, voice, isrecordi
             <View className={`flex-row items-end`}>
                 {status &&<FontAwesomeIcon style={{marginBottom:5}} icon={faUser} size={15} color={'gray'}/>}
                 <View
-                    className={`overflow-hidden shadow-lg rounded-lg  mb-1 ${boxStyleVoice}`}
+                    className={`overflow-hidden shadow-lg rounded-lg  mb-1 ${boxStylePhoto}`}
                 >
                 <Image
                     source={
@@ -160,10 +162,30 @@ export default function MessageComponent({ item, user,setVoice, voice, isrecordi
                 </View>
             </View>
             <Text className='text-xs'>{item.time}</Text>
-        </>
+            </>
+            }
+            {item?.type === "VIDEO" && 
+             <>
+             <View className="flex-row items-end mb-1">
+             {status && <FontAwesomeIcon  icon={faUser} size={15} color={'gray'}/>}
+                 <View
+                     className={`shadow-lg relative rounded-lg ${boxStyleVideo} overflow-hidden`}
+                     >
+                      <View  
+                         style={{shadowColor:'darkred',width:wp(70),height:wp(70)}}
+                         className='shadow-sm'
+                       >
+                        {/* video component <<<< */}
+                            <VedioComponent/>
+                         {/* <Icon_Botton activeShadow={true} backColor={'#eeeeee'} colorShadow={''} icon={progressVoice !==0 && isActive ? faPause :faPlay} color={'rgba(0,0,0,0.7)'} func={handlePlayVoice}/> */}
+                     </View>
+                     {status && <Text className='text-[10px] bg-purple-950/70 absolute left-2 top-2  p-1 px-3 rounded-lg tracking-wide text-white'>{item.user}</Text>}
+                 </View>
+             </View>
+             <Text className='text-xs'>{item.time}</Text>
+            </>
             }
             </View>
-           
         </View>
     );
 }

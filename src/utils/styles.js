@@ -11,6 +11,7 @@ export const styles = StyleSheet.create({
     loginheading: {
         fontSize: 26,
         marginBottom: 10,
+        color:'gray'
     },
     logininputContainer: {
         width: "100%",
@@ -22,6 +23,7 @@ export const styles = StyleSheet.create({
         width: "90%",
         padding: 8,
         borderRadius: 10,
+        color:'gray'
     },
     loginbutton: {
         backgroundColor: "green",

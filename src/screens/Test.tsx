@@ -12,7 +12,7 @@ export default function VideoPlayer(){
  return (
    <Video 
     // Can be a URL or a local file.
-  className='flex-1'
+  className='flex-1 bg-gray-500'
     source={background2}
     controls={true}
     paused={true}
