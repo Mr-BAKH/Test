@@ -1,5 +1,4 @@
 import RNFS from 'react-native-fs';
-import RNFetchBlob from 'react-native-fetch-blob';
 
 // Function to read a file from the local path and convert it to Base64
 export const fileToBase64 = async (filePath:string) => {
