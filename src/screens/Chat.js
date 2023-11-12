@@ -1,4 +1,4 @@
-import React,{useState, useEffect,useLayoutEffect, useMemo} from "react";
+import React,{useState,memo, useEffect,useLayoutEffect, useMemo} from "react";
 import { View, Text, Pressable, SafeAreaView, FlatList,StatusBar } from "react-native";
 import {Icon_Botton} from '../components/Botton'
 import {faUserGroup,faMagnifyingGlass} from '@fortawesome/free-solid-svg-icons';
@@ -100,4 +100,4 @@ useLayoutEffect(() => {
     );
 };
 
-export default Chat;
+export default memo(Chat);

@@ -1,5 +1,5 @@
-import React, { useLayoutEffect, useState, useEffect, useMemo } from "react";
-import { View, TextInput,Image, Text, FlatList, Pressable,Platform,Alert } from "react-native";
+import React, {memo,useRef, useLayoutEffect,useCallback, useState, useEffect, useMemo } from "react";
+import { View, TextInput,Image,Text, FlatList, Pressable,Platform,Alert } from "react-native";
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import * as Progress from 'react-native-progress';
@@ -16,15 +16,17 @@ import AudioRecorderPlayer, {
     RecordBackType,
   } from 'react-native-audio-recorder-player';
 import RNFS from 'react-native-fs';
-import {faPaperPlane,faVideo,faCamera,faStop,faMicrophoneLines,faPlay,faXmark,faPause} from '@fortawesome/free-solid-svg-icons';
+import {faPaperPlane,faArrowDown,faVideo,faCamera,faStop,faMicrophoneLines,faPlay,faXmark,faPause} from '@fortawesome/free-solid-svg-icons';
 import socket from "../utils/socket";
 import {Icon_Botton} from '../components/Botton'
 import MessageComponent from "../components/MessageComponent";
 import {fileToBase64} from '../utils/blob'
+import VedioComponent from '../components/Video'
 
 const Messaging = ({ route, navigation }) => {
 
-    var lesonSocket = socket; 
+    let lesonSocket = socket; 
+    const flatlistRef = useRef(null)
 
     const [chatMessages, setChatMessages] = useState([]);
     const [message, setMessage] = useState("");
@@ -39,9 +41,8 @@ const Messaging = ({ route, navigation }) => {
     const [photoFile,setPhotoFile] = useState<string>('')
     const [showImage, setShowImage]= useState<boolean>(false);// default is fualse
     //set video state
-    const [video,setVideo] = useState<string>('')
     const [videoFile,setVideoFile] = useState<string>('')
-    const [showVideo, setShowVideo]= useState<boolean>(false);// default
+    const [videoPath,setVideoPath] = useState<string>('')
     const [IconState, setIconState]= useState<number>(0)// default on recording!
     const [centerAlert, setCenterAlert] = useState<boolean>(false);// default
 
@@ -54,6 +55,10 @@ const Messaging = ({ route, navigation }) => {
         socket.emit("findRoom", id);
         socket.on("foundRoom", (roomChats) => setChatMessages(roomChats));
         setUser(username)
+        setTimeout(async() => {
+            scrollToBottom()
+            console.log('scroll bottom<<')
+        }, 10000);
     }, []);
 
     useMemo(() => {
@@ -61,6 +66,12 @@ const Messaging = ({ route, navigation }) => {
             setChatMessages(roomChats);
         });
     }, [lesonSocket])
+
+    const scrollToBottom = () => {
+        if (flatlistRef.current) {
+            flatlistRef.current.scrollToEnd({ animated: true });
+        }
+      };
 
     const handlechangeIcon =()=>{
         console.log('logPress')
@@ -83,7 +94,7 @@ const Messaging = ({ route, navigation }) => {
     },[IconState])
    
     const handleNewMessage = async() => {
-
+        scrollToBottom();//auto scroll
         let type = '';
         const hour =
         new Date().getHours() < 10
@@ -151,7 +162,6 @@ const Messaging = ({ route, navigation }) => {
                 timestamp: { hour, mins },
             });
             // clear video state
-            setVideo('')
             setVideoFile('')
         }
         // if client dont sent anythings
@@ -176,7 +186,7 @@ const Messaging = ({ route, navigation }) => {
             setMessage('');
         }
         setPhoto('');setPhotoFile('')
-        
+        setVideoFile('');setVideoPath('');
     }
 
     const stopRecordingVoice = async()=>{
@@ -266,6 +276,7 @@ const Messaging = ({ route, navigation }) => {
     const handleCamera = async(): Promise<void> =>{
         // clear all input
         setMessage('');
+        setVideoFile('');setVideoPath('');
         if(voice){
             stopRecordingVoice();
             setVoice(undefined);
@@ -316,6 +327,7 @@ const Messaging = ({ route, navigation }) => {
                     const file = await fileToBase64(val.assets[0].uri);
                     if(file){
                         setVideoFile(file)
+                        setVideoPath(val.assets[0].uri)
                     }else{
                         console.log('video file is not useable <<<')
                     }
@@ -342,7 +354,6 @@ const Messaging = ({ route, navigation }) => {
                           className='w-[90%] font-bold text-red-950 text-center p-5 rounded-full bg-orange-100/90'
                         >
                             {IconState == 0?
-
                             'Hold Microphone to use other features!'
                             :    
                             'Change feature!'
@@ -353,7 +364,9 @@ const Messaging = ({ route, navigation }) => {
                 {chatMessages[0] && (
                     <FlatList
                         data={chatMessages}
+                        ref={flatlistRef}
                         showsVerticalScrollIndicator={false}
+                        // onViewableItemsChanged={onViewableItemsChangedHandler}
                         contentContainerStyle={{padding:15, paddingBottom:70}}
                         renderItem={({ item }) => (
                             <MessageComponent item={item} user={user} isrecording={isRecordVoice} voice={voice} setVoice={setVoice} />
@@ -414,6 +427,19 @@ const Messaging = ({ route, navigation }) => {
                       </View>
                     </View>
                 }
+                {/* video preview */}
+                {videoFile !== '' && videoPath !== '' &&  
+                    <View  
+                    style={{shadowColor:'darkred',width:wp(70),height:wp(70)}}
+                    className='flex-row overflow-hidden bg-red-950  rounded-lg object-cover backdrop-blur-lg  shadow-md absolute items-center justify-end bottom-[80px]'
+                    >
+                      <VedioComponent style={1} path={videoPath}/>
+                         <View className='absolute right-1 top-1 bg-gray-900/90 rounded-full justify-center items-center'>
+                            <Icon_Botton icon={faXmark} color={'darkred'} func={()=>{setVideoPath('');setVideoFile('')}}/>
+                        </View>
+                    </View>
+                }
+
                 {/* controll botton and inpute */}
                 <View
                     style={{shadowColor:'purple'}}
@@ -433,7 +459,7 @@ const Messaging = ({ route, navigation }) => {
                         {IconState == 0 && <Icon_Botton Longfunc={handlechangeIcon}activeShadow={isRecordVoice&& true} colorShadow={'red'} icon={isRecordVoice? faStop:faMicrophoneLines} color={isRecordVoice?'darkred':'rgba(255,255,255,0.5)'} func={handleRecordVoice}/>}
                         {IconState == 1 && <Icon_Botton Longfunc={handlechangeIcon} activeShadow={false} colorShadow={''} icon={faVideo} color={'rgba(255,255,255,0.5)'} func={handleVideoRecord}/>}
                         {IconState == 2 && <Icon_Botton Longfunc={handlechangeIcon} activeShadow={false} colorShadow={''} icon={faCamera} color={'rgba(255,255,255,0.5)'} func={handleCamera}/>}
-                       {!isRecordVoice && <Icon_Botton backColor={'purple'}  activeShadow={true} colorShadow={''} icon={faPaperPlane} color={'white'} func={handleNewMessage}/>}
+                        {!isRecordVoice && <Icon_Botton backColor={'purple'}  activeShadow={true} colorShadow={''} icon={faPaperPlane} color={'white'} func={handleNewMessage}/>}
                     </View>
             </View>
             </View>
@@ -441,6 +467,6 @@ const Messaging = ({ route, navigation }) => {
     );
 };
 
-export default Messaging;
+export default memo(Messaging);
 
 

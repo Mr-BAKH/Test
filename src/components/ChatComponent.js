@@ -39,6 +39,7 @@ const ChatComponent = ({ item, username }) => {
                     <Text style={styles.cusername}>{item.roomName}</Text>
                     <Text style={styles.cmessage}>
                         {messages?.type === 'VOICE'&& `voice from ${lastuser}`}
+                        {messages?.type === 'VIDEO'&& `video from ${lastuser}`}
                         {messages?.type === 'PHOTO'&& `photo from ${lastuser}`}
                         {messages?.type === 'TEXT'&& (messages.text?.length > 15? messages.text.slice(0,15)+'...': messages.text)+` from ${lastuser}`}
                         {messages== undefined && "Tap to start chatting" }
