@@ -316,7 +316,6 @@ const Messaging = ({ route, navigation }) => {
                     const file = await fileToBase64(val.assets[0].uri);
                     if(file){
                         setVideoFile(file)
-                        console.log(file.length)
                     }else{
                         console.log('video file is not useable <<<')
                     }
@@ -421,7 +420,7 @@ const Messaging = ({ route, navigation }) => {
                     className='flex-row px-[15px] absolute bottom-5 w-[90%] shadow-md rounded-3xl bg-purple-950 justify-center items-center'
                 >
                     <TextInput
-                        className="flex-grow max-w-[70%] text-white"
+                        className="flex-grow text-[18px] max-w-[70%] text-white"
                         placeholder="write..."
                         placeholderTextColor={'white'}
                         onChangeText={(value) => {if(voice === undefined){setMessage(value)}}}

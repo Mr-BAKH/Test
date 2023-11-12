@@ -43,7 +43,6 @@ export default function MessageComponent({ item, user,setVoice, voice, isrecordi
                     // console.log('write audio file in  >> ',filePath)
                 }else if(item.type === "VIDEO"){
                     console.log('file://'+filePath)
-                    console.log(item.text,' >>> read file from server')
                     setPathVideo('file://'+filePath)
                 }
                 else{
