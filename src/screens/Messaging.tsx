@@ -42,6 +42,9 @@ const Messaging = ({ route, navigation }) => {
     const [video,setVideo] = useState<string>('')
     const [videoFile,setVideoFile] = useState<string>('')
     const [showVideo, setShowVideo]= useState<boolean>(false);// default
+    const [IconState, setIconState]= useState<number>(0)// default on recording!
+    const [centerAlert, setCenterAlert] = useState<boolean>(false);// default
+
 
     const { name, id, username } = route.params;
     
@@ -59,6 +62,25 @@ const Messaging = ({ route, navigation }) => {
         });
     }, [lesonSocket])
 
+    const handlechangeIcon =()=>{
+        console.log('logPress')
+        if(IconState === 0 ){
+            setIconState(IconState+1)
+        }
+        if(IconState === 1 ){
+            setIconState(IconState+1)
+        }
+        if(IconState === 2 ){
+            setIconState(0)
+        }
+    }
+
+    useMemo(()=>{
+        setCenterAlert(true)
+        setTimeout(() => {
+            setCenterAlert(false)
+        }, 3000);
+    },[IconState])
    
     const handleNewMessage = async() => {
 
@@ -311,6 +333,24 @@ const Messaging = ({ route, navigation }) => {
         >
             <View className="flex-1 relative items-center">
             <View className="flex-1 w-full">
+                {/* center Alert */}
+                {
+                    centerAlert &&
+                    <View
+                        className='w-full top-2 absolute z-50 justify-center items-center'
+                    >
+                        <Text
+                          className='w-[90%] font-bold text-red-950 text-center p-5 rounded-full bg-orange-100/90'
+                        >
+                            {IconState == 0?
+
+                            'Hold Microphone to use other features!'
+                            :    
+                            'Change feature!'
+                        }
+                        </Text>
+                    </View>
+                }
                 {chatMessages[0] && (
                     <FlatList
                         data={chatMessages}
@@ -381,19 +421,19 @@ const Messaging = ({ route, navigation }) => {
                     className='flex-row px-[15px] absolute bottom-5 w-[90%] shadow-md rounded-3xl bg-purple-950 justify-center items-center'
                 >
                     <TextInput
-                        className="flex-grow max-w-[60%] text-white"
+                        className="flex-grow max-w-[70%] text-white"
                         placeholder="write..."
                         placeholderTextColor={'white'}
                         onChangeText={(value) => {if(voice === undefined){setMessage(value)}}}
                         value={message}
                     />
                     <View
-                        style={{gap:10}}
+                        style={{gap:8}}
                         className='flex-row w-fit'
                     >
-                        <Icon_Botton activeShadow={false} colorShadow={''} icon={faVideo} color={'rgba(255,255,255,0.5)'} func={handleVideoRecord}/>
-                        <Icon_Botton activeShadow={false} colorShadow={''} icon={faCamera} color={'rgba(255,255,255,0.5)'} func={handleCamera}/>
-                        <Icon_Botton activeShadow={isRecordVoice&& true} colorShadow={'red'} icon={isRecordVoice? faStop:faMicrophoneLines} color={isRecordVoice?'darkred':'rgba(255,255,255,0.5)'} func={handleRecordVoice}/>
+                        {IconState == 0 && <Icon_Botton Longfunc={handlechangeIcon}activeShadow={isRecordVoice&& true} colorShadow={'red'} icon={isRecordVoice? faStop:faMicrophoneLines} color={isRecordVoice?'darkred':'rgba(255,255,255,0.5)'} func={handleRecordVoice}/>}
+                        {IconState == 1 && <Icon_Botton Longfunc={handlechangeIcon} activeShadow={false} colorShadow={''} icon={faVideo} color={'rgba(255,255,255,0.5)'} func={handleVideoRecord}/>}
+                        {IconState == 2 && <Icon_Botton Longfunc={handlechangeIcon} activeShadow={false} colorShadow={''} icon={faCamera} color={'rgba(255,255,255,0.5)'} func={handleCamera}/>}
                        {!isRecordVoice && <Icon_Botton backColor={'purple'}  activeShadow={true} colorShadow={''} icon={faPaperPlane} color={'white'} func={handleNewMessage}/>}
                     </View>
             </View>

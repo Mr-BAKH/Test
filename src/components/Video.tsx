@@ -20,6 +20,8 @@ export default function VideoPlayer({path,style}){
   useMemo(()=>{
     if(pauseState){
       setDisplayReady(false)
+    }else{
+      setDisplayReady(true)
     }
     setProgress(0)
   },[pauseState])
@@ -33,13 +35,12 @@ export default function VideoPlayer({path,style}){
     className='flex-1 relative justify-center items-center'
   >
     {/* controll button */}
-    <View className='absolute z-20'>
+    <View className='absolute z-40 right-5 bottom-2'>
       <Icon_Botton color={"#eee"} backColor={'rgba(0,0,0,0.2)'} icon={pauseState? faPlay: faPause} func={()=>setPause(!pauseState)}/>
     </View>
     {/*  */}
     {!displayReady  ? 
       <View className='w-full h-full z-10 absolute justify-end'>
-
       <Image
         style={{opacity:0.2}}
         source={require('../assets/image/pexels-martin-lopez-1117132.jpg')}
@@ -49,17 +50,16 @@ export default function VideoPlayer({path,style}){
       </View>
       :
       <View
-        className='w-full absolute z-20 bottom-5 bg-black/20 py-2 justify-end items-center'
+        className='w-full absolute z-20 bottom-1 bg-black/20 py-1 justify-end items-center'
       >
           <Progress.Bar 
           width={wp(65)}
           height={10}
-          color={style?'purple':'gray'} 
+          color={style?'purple':'darkblue'} 
           borderWidth={0}
           progress={progress} 
           indeterminateAnimationDuration={1000}
           />
-
       </View>
     }  
    <Video 
