@@ -36,13 +36,14 @@ export default function MessageComponent({ item, user,setVoice, voice, isrecordi
     useEffect(()=>{
         if(item.type === 'VOICE' || item.type === "PHOTO" || item.type === 'VIDEO'){
             const filePath = RNFS.DocumentDirectoryPath+(item.type =='VOICE'?`/${item.id}.mp3`:( item.type == 'PHOTO'?`/${item.id}.jpg` : `/${item.id}.mp4`));
-            RNFS.writeFile(filePath, item.text, 'base64')
-            .then(() => {
+             RNFS.writeFile(filePath, item.text, 'base64')
+            .then(async() => {
                 if(item.type === "VOICE"){
                     setPathAudio(filePath)
                     // console.log('write audio file in  >> ',filePath)
                 }else if(item.type === "VIDEO"){
                     console.log('file://'+filePath)
+                    console.log(item.text,' >>> read file from server')
                     setPathVideo('file://'+filePath)
                 }
                 else{
@@ -52,8 +53,8 @@ export default function MessageComponent({ item, user,setVoice, voice, isrecordi
             })
             .catch((error) => {
                 console.error('Error saving audio file:', error);
-            });
-        }
+            }); 
+            }
     },[])
 
 
@@ -67,12 +68,16 @@ export default function MessageComponent({ item, user,setVoice, voice, isrecordi
             try {
                 await voice.startPlayer(pathAudio);
                 voice.addPlayBackListener((e: PlayBackType) => {
-                  setProgressVoice(Math.round(e.currentPosition/e.duration*100)/100)
-                    if(Math.ceil(e.currentPosition/e.duration*100)/100 == 1) {
+                //   setProgressVoice(Math.round(e.currentPosition/e.duration*100)/100)
+                  setProgressVoice(Math.ceil(Math.ceil(Math.ceil(e.currentPosition/e.duration*1000)/10)/10)/10)
+                    console.log(Math.ceil(Math.ceil(Math.ceil(e.currentPosition/e.duration*1000)/10)/10)/10)
+                    if(Math.ceil(Math.ceil(Math.ceil(e.currentPosition/e.duration*1000)/10)/10)/10 == 1) {
                         console.log('clear!')
-                        setProgressVoice(0);  
-                        SetIsActive(false)          
-                    }
+                        setTimeout(() => {
+                            setProgressVoice(0);  
+                            SetIsActive(false)          
+                        }, 300);
+                    }       
                 });
               } catch (err) {
                 console.log('startPlayer error', err);
@@ -181,7 +186,7 @@ export default function MessageComponent({ item, user,setVoice, voice, isrecordi
                          className='shadow-sm'
                        >
                         {/* video component <<<< */}
-                            <VedioComponent path={pathVideo}/>
+                            <VedioComponent style={status} path={pathVideo}/>
                          {/* <Icon_Botton activeShadow={true} backColor={'#eeeeee'} colorShadow={''} icon={progressVoice !==0 && isActive ? faPause :faPlay} color={'rgba(0,0,0,0.7)'} func={handlePlayVoice}/> */}
                      </View>
                      {status && <Text className='text-[10px] bg-purple-950/70 absolute left-2 top-2  p-1 px-3 rounded-lg tracking-wide text-white'>{item.user}</Text>}

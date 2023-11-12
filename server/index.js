@@ -46,7 +46,7 @@ IO.on('connection', (socket) => {
         //👇🏻 Destructures the property from the object
         // const { room_id, message, user, timestamp } = data;
         const { room_id, message, type, user, timestamp } = data;
-        // console.log(room_id, type, user, timestamp, message)
+        console.log(room_id, type, user, timestamp, message)
     
         //👇🏻 Finds the room where the message was sent
         let result = chatRooms.filter((room) => room.id == room_id);

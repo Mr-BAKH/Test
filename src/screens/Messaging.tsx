@@ -273,6 +273,7 @@ const Messaging = ({ route, navigation }) => {
             console.log('ERROR in lunch camrea!',e)
         }
     }
+
     const handleVideoRecord = async(): Promise<void> =>{
         // clear all input
         setMessage('');
@@ -286,17 +287,14 @@ const Messaging = ({ route, navigation }) => {
             await launchCamera(
                 {
                     mediaType:'video',
-                    // includeBase64:true,
                     videoQuality:'low',
-                    // durationLimit:3000,
-                    // quality: 0.2 // set quality of the image
                 },
             ).then(async(val:any)=>{
                 if(val.assets[0].uri){
                     const file = await fileToBase64(val.assets[0].uri);
-                    // console.log(file)
                     if(file){
                         setVideoFile(file)
+                        console.log(file.length)
                     }else{
                         console.log('video file is not useable <<<')
                     }
@@ -307,11 +305,6 @@ const Messaging = ({ route, navigation }) => {
         }
     }
 
-    //test function 
-    const handleVideo = ()=>{
-        console.log('handle video');
-        setVideo('this is a video')
-    }
     return (
         <View   
             className='flex-1 bg-white'
