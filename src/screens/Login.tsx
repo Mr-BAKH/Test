@@ -25,7 +25,7 @@ import {
 import { styles } from "../utils/styles";
 
 GoogleSignin.configure({
-    webClientId: '<FROM DEVELOPER CONSOLE>', // client ID of type WEB for your server (needed to verify user ID and offline access)
+    androidClientId: '1080041864924-p3fmbm7pl81odvup7cd01uvf2589umk1.apps.googleusercontent.com',
   });
 
 const Login = ({ navigation }) => {

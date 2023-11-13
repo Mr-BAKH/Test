@@ -1,6 +1,9 @@
-package com.app;
+package com.bychat;
 
 import android.app.Application;
+
+import com.app.BuildConfig;
+import com.app.ReactNativeFlipper;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
