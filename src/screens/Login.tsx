@@ -1,10 +1,16 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {Text_Botton,Icon_Botton} from '../components/Botton'
 import {faEye,faEyeDropperEmpty,faLock} from '@fortawesome/free-solid-svg-icons';
+import {
+    GoogleSignin,
+    statusCodes,
+  } from '@react-native-google-signin/google-signin';
 
+  import { useNetInfo } from "@react-native-community/netinfo";
 
+ 
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo} from "react";
 import {
     Text,
     SafeAreaView,
@@ -18,11 +24,42 @@ import {
 //👇🏻 Import the app styles
 import { styles } from "../utils/styles";
 
+GoogleSignin.configure({
+    webClientId: '<FROM DEVELOPER CONSOLE>', // client ID of type WEB for your server (needed to verify user ID and offline access)
+  });
+
 const Login = ({ navigation }) => {
     const [username, setUsername] = useState<string>("");
     const [passWord, setPassword] = useState<string>("");
     const [showPassword, setShowPassword] = useState<boolean>(true)
     const [Regester, setgester] = useState<boolean>(false)
+
+
+    const googleSignIN = async() => {
+        console.log('google signin Require!')
+        try {
+          await GoogleSignin.hasPlayServices();
+          const userInfo = await GoogleSignin.signIn();
+          console.log('userInfo from google:>>>',userInfo)
+
+        } catch (error:any) {
+          if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+            console.log('log in canseld!')
+            // user cancelled the login flow
+          } else if (error.code === statusCodes.IN_PROGRESS) {
+            console.log('connect to google...')
+            // operation (e.g. sign in) is in progress already
+          } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+            console.log('is not avalable!')
+            // play services not available or outdated
+          } else {
+            // some other error happened
+            console.log(error)
+          }
+        }
+      };
+
+    
 
 
     //👇🏻 checks if the input field is empty
@@ -34,6 +71,17 @@ const Login = ({ navigation }) => {
             Alert.alert("Username is required.");
         }
     };
+
+    const {isConnected} = useNetInfo();
+    
+    useMemo(()=>{
+        if(isConnected == false ){
+            Alert.alert('connet to Internet!')
+        }
+        console.log('internet!')
+    },[isConnected])
+
+
 
     return (
         <SafeAreaView
@@ -76,24 +124,24 @@ const Login = ({ navigation }) => {
                 >
                     {/* log in btn */}
                     <Text_Botton
+                        color={'bg-transparent'}
+                        func={()=>console.log('now click!')}
+                        textColor={'text-purple-950'}
+                        title={'Regester'}
+                    />
+                    <Text_Botton
                         color={'bg-green-200'}
                         func={handleSignIn}
                         textColor={'text-slate-900'}
                         title={'LOGIN'}
                     />
                     {/* Sign in btn */}
-                    <Text_Botton
-                        color={'bg-sky-100'}
-                        func={()=>console.log('now click!')}
-                        textColor={'text-slate-900'}
-                        title={'Regester'}
-                    />
                 </View>
                 {/* google log in  */}
                 <View className='w-full mt-10'>
                     <Text_Botton
                         color={'bg-transparent'}
-                        func={()=>console.log('log in with google')}
+                        func={googleSignIN}
                         textColor={'text-slate-600'}
                         title={'Log in with google'}
                     >
