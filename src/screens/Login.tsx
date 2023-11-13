@@ -112,6 +112,7 @@ const Login = ({ navigation }) => {
                     <Text_Botton
                         color={'bg-transparent'}
                         title={'I forgot password !'}
+                        textColor={'text-black/25'}
                         func={()=> console.log('forgot password!')}
                     />
                 </View>
