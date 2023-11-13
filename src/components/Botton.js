@@ -1,4 +1,4 @@
-import React from "react"
+import React, { Children } from "react"
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import { Pressable,Text } from "react-native";
 
@@ -18,14 +18,15 @@ export const Icon_Botton = ({icon,func,color,activeShadow,colorShadow,backColor,
         </Pressable>
     )
 }
-export const Text_Botton = ({title,func,color,textColor})=>{
+export const Text_Botton = ({title,func,color,textColor,children})=>{
     return(
         <Pressable 
-          style={{backgroundColor:color}}
-          className={`w-fit px-[30px] py-[10px] rounded-full justify-center items-center `}
+          style={{gap:8}}
+          className={`w-fit flex-row ${color} px-[30px] py-[10px] rounded-full justify-center items-center `}
           onPress={func}
         >
-          <Text style={{color:textColor}}>{title}</Text>
+          <Text className={`${textColor}`}>{title}</Text>
+          {children}
         </Pressable>
     )
 }
