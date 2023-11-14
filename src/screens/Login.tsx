@@ -1,14 +1,12 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {Text_Botton,Icon_Botton} from '../components/Botton'
-import {faEye,faEyeDropperEmpty,faLock} from '@fortawesome/free-solid-svg-icons';
+import {faEye,faLock} from '@fortawesome/free-solid-svg-icons';
 import {
     GoogleSignin,
     statusCodes,
   } from '@react-native-google-signin/google-signin';
 
-  import { useNetInfo } from "@react-native-community/netinfo";
-
- 
+import { useNetInfo } from "@react-native-community/netinfo";
+import uuid from 'react-native-uuid';
 
 import React, { useState, useEffect, useMemo} from "react";
 import {
@@ -26,60 +24,73 @@ import { styles } from "../utils/styles";
 
 GoogleSignin.configure({
     androidClientId: '1080041864924-p3fmbm7pl81odvup7cd01uvf2589umk1.apps.googleusercontent.com',
-  });
+});
+
+type user = {
+    ID: string,
+    userName: string , 
+}
 
 const Login = ({ navigation }) => {
     const [username, setUsername] = useState<string>("");
     const [passWord, setPassword] = useState<string>("");
     const [showPassword, setShowPassword] = useState<boolean>(true)
-    const [Regester, setgester] = useState<boolean>(false)
-
-
+    const [userInfo, setUserInfo ] = useState<user>()
+    const {isConnected} = useNetInfo();
+    
     const googleSignIN = async() => {
-        console.log('google signin Require!')
         try {
           await GoogleSignin.hasPlayServices();
-          const userInfo = await GoogleSignin.signIn();
-          console.log('userInfo from google:>>>',userInfo)
-
+          await GoogleSignin.signIn()
+          .then((val)=>{
+              if(val.user.id){
+                // set redux slice for user
+                //     {
+                //         ID: val.user.id,
+                //         userName: val.user.name? val.user.name : val.user.id,
+                //     }
+                navigation.navigate("Chat",{
+                    username: val.user.name,
+                    userID: val.user.id,
+                });
+                
+              }
+          })
         } catch (error:any) {
           if (error.code === statusCodes.SIGN_IN_CANCELLED) {
             console.log('log in canseld!')
-            // user cancelled the login flow
           } else if (error.code === statusCodes.IN_PROGRESS) {
             console.log('connect to google...')
-            // operation (e.g. sign in) is in progress already
           } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
             console.log('is not avalable!')
-            // play services not available or outdated
           } else {
-            // some other error happened
             console.log(error)
           }
         }
       };
 
-    
-
 
     //👇🏻 checks if the input field is empty
-    const handleSignIn = () => {
+    const handleSignIn = async() => {
         // check if use existing
+        const uniqId = uuid.v4()
         if (username.trim()) {
-            navigation.navigate("Chat",{username});
+            navigation.navigate("Chat",{
+                username,
+                userID: uniqId,
+            });
         } else {
             Alert.alert("Username is required.");
         }
     };
 
-    const {isConnected} = useNetInfo();
     
     useMemo(()=>{
         if(isConnected == false ){
             Alert.alert('connet to Internet!')
         }
-        console.log('internet!')
-    },[isConnected])
+        console.log('cal use memo!')
+    },[userInfo])
 
 
 
