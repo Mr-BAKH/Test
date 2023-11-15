@@ -4,7 +4,7 @@ import React from "react";
 import Login from "../screens/Login";
 import Chat from "../screens/Chat";
 import Messaging from "../screens/Messaging";
-import Test from '../screens/Test'
+import Test from '../test/indes'
 
 //👇🏻 React Navigation configurations
 import { NavigationContainer } from "@react-navigation/native";
@@ -16,8 +16,8 @@ export default function App() {
     return (
         <NavigationContainer>
             <Stack.Navigator
-                initialRouteName="Login"
-                // initialRouteName="Test"
+                // initialRouteName="Login"
+                initialRouteName="Test"
             >
                 <Stack.Screen
                     name='Login'
