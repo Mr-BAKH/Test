@@ -7,19 +7,21 @@ export class User extends Realm.Object<User> {
     userpass!: string;
     userphone!: string;
     usergmail?: string;
-    userprofile?: string
+    userprofile?: string;
+    time!: Date;
   
     static schema: ObjectSchema = {
       name: 'User',
+      primaryKey: '_id',
       properties: {
-        _id: 'objectId',
+        _id: "objectId",
         username: 'string',
         userpass: 'string',
         userphone: 'string',
         usergmail: {type:'string', default:'...@gmail.com'},
-        userprofile: {type:'string', default:''}
+        userprofile: {type:'string', default:''},
+        time: 'date'
       },
-      primaryKey: '_id',
     };
   }
   
