@@ -1,8 +1,9 @@
 import React,{useState,memo, useEffect,useLayoutEffect, useMemo} from "react";
-import { View, Text, Pressable, SafeAreaView, FlatList,StatusBar } from "react-native";
+import { View, Text, Pressable, SafeAreaView, FlatList,StatusBar, Alert } from "react-native";
 import {Icon_Botton} from '../components/Botton'
 import {faUserGroup,faMagnifyingGlass} from '@fortawesome/free-solid-svg-icons';
 import socket from "../utils/socket";
+import {SchemaContext} from '../models/main'
 
 //👇🏻 The Modal component
 import Modal from "../components/Modal";
@@ -23,13 +24,32 @@ socket.on("roomsList", async(data) => {
     }
 });
 
-const Chat = ({route}) => {
+
+const {useRealm} = SchemaContext;
+
+
+const Chat = () => {
     
     const [visible, setVisible] = React.useState(false); //default false
     const [rooms, setRooms] = useState([]);
+    const [user,setUser] = useState(undefined);
+    const realm = useRealm();
     
     let socketRead = socket;
-    const {username} = route.params;
+
+    new Promise((res,rej)=>{
+        const user = realm.objects('User')[0];
+        if(user) res(user)
+    })
+    .then(
+        (val)=> {
+            setUser(val.usergmail)
+        },
+    )
+    .catch(
+        (e)=> console.log(e)
+    )
+
 
     useMemo(()=>{
         socket.on("roomsList", async(data) => {
@@ -44,7 +64,7 @@ const Chat = ({route}) => {
     },[socketRead])
 
 //👇🏻 Runs when the component mounts
-useLayoutEffect(() => {
+useEffect(() => {
     const ip = '192.168.77.100' //
     function fetchGroups() {
         fetch(`http:///${ip}:4000/api`)
@@ -54,6 +74,7 @@ useLayoutEffect(() => {
     }
     fetchGroups();
     CheckPermision(); // check permision!
+
 }, []);
 
 
@@ -81,10 +102,10 @@ useLayoutEffect(() => {
             </View>
 
             <View style={styles.chatlistContainer}>
-                {rooms.length > 0 ? (
+                {rooms.length > 0 && user ? (
                     <FlatList
                         data={rooms}
-                        renderItem={({ item }) => <ChatComponent item={item} username={username} />}
+                        renderItem={({ item }) => <ChatComponent item={item} username={user} />}
                         keyExtractor={(item) => item.id}
                     />
                 ) : (

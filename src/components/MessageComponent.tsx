@@ -28,7 +28,7 @@ export default function MessageComponent({ item, user,setVoice, voice, isrecordi
     const [progressVoice, setProgressVoice] = useState<number>(0)
     const [isActive, SetIsActive] = useState<boolean>(false)
 
-    const boxStyle=  status? 'rounded-bl-[0px] bg-purple-300': 'rounded-br-[0px] bg-sky-200'
+    const boxStyle=  status? 'rounded-bl-[0px] bg-purple-500': 'rounded-br-[0px] bg-sky-500'
     const boxStyleVoice=  status? 'rounded-bl-[0px] bg-purple-700': 'rounded-br-[0px] bg-sky-700'
     const boxStylePhoto=  status? 'rounded-bl-[0px] bg-purple-950': 'rounded-br-[0px] bg-sky-950'
     const boxStyleVideo=  status? 'rounded-bl-[0px] bg-purple-600': 'rounded-br-[0px] bg-sky-600'
@@ -102,7 +102,7 @@ export default function MessageComponent({ item, user,setVoice, voice, isrecordi
                         style={{shadowColor:'gray'}}
                         className={`max-w-[50%] px-[15px] py-[8px] shadow-lg rounded-lg  mb-1 ${boxStyle}`}
                         >
-                    <Text className='text-[16px]'>{item.text}</Text>
+                    <Text className='text-[16px] text-slate-950/70'>{item.text}</Text>
                     {status && <Text className='text-[10px] tracking-wide text-gray-950/25'>{item.user}</Text>}
                     </View>
                 </View>

@@ -2,7 +2,7 @@
 import Realm,{ObjectSchema} from "realm";
 
 export class User extends Realm.Object<User> {
-    _id!: Realm.BSON.ObjectId;
+    _id!: string;
     username!: string;
     userpass!: string;
     userphone!: string;
@@ -14,12 +14,12 @@ export class User extends Realm.Object<User> {
       name: 'User',
       primaryKey: '_id',
       properties: {
-        _id: "objectId",
+        _id: "string",
         username: 'string',
         userpass: 'string',
         userphone: 'string',
-        usergmail: {type:'string', default:'...@gmail.com'},
-        userprofile: {type:'string', default:''},
+        usergmail: 'string',
+        userprofile: 'string',
         time: 'date'
       },
     };

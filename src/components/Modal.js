@@ -26,10 +26,13 @@ const Modal = ({ setVisible }) => {
             className='w-screen h-fit bottom-0 rounded-t-[50px] bg-purple-300 absolute z-10 py-[50] px-[20px]'
         >
             
-            <Text style={styles.modalsubheading}>Enter your Group name</Text>
+            <Text 
+                 className='text-3xl text-purple-900 font-bold m-5 text-center'
+            >Create Group</Text>
             <TextInput
-                className='p-6 bg-white rounded-full'
-                placeholder='Name...'
+                className='p-6 bg-white text-md text-slate-900 rounded-full'
+                placeholder='Enter a group name ...'
+                placeholderTextColor={'gray'}
                 onChangeText={(value) => setGroupName(value)}
             />
 
@@ -37,8 +40,8 @@ const Modal = ({ setVisible }) => {
                 style={{gap:10}}
                 className='flex-row justify-center mt-5'
             >
-                <Text_Botton title={'CREATE'} textColor={'white'} color={'darkgreen'} func={handleCreateRoom}/>
-                <Text_Botton title={'cansel'} textColor={'white'} color={'darkred'} func={closeModal}/>
+                <Text_Botton title={'CANSEL'} textColor={'text-slate-950'} color={'bg-transparent'} func={closeModal}/>
+                <Text_Botton title={'CREATE'} textColor={'text-slate-950'} color={'bg-green-500'} func={handleCreateRoom}/>
             </View>
         </View>
     );

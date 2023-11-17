@@ -1,14 +1,9 @@
 import {Text_Botton,Icon_Botton} from '../components/Botton'
 import {faEye,faLock} from '@fortawesome/free-solid-svg-icons';
-import {
-    GoogleSignin,
-    statusCodes,
-  } from '@react-native-google-signin/google-signin';
-
+import {GoogleSignin,statusCodes} from '@react-native-google-signin/google-signin';
 import { useNetInfo } from "@react-native-community/netinfo";
 import uuid from 'react-native-uuid';
-
-import React, { useState, useEffect, useMemo} from "react";
+import React, { useState, useEffect, useMemo, useCallback} from "react";
 import {
     Text,
     SafeAreaView,
@@ -18,9 +13,13 @@ import {
     Image,
     Alert,
 } from "react-native";
-
-//👇🏻 Import the app styles
 import { styles } from "../utils/styles";
+import {firebaseAuthintication} from '../utils/firebaseauth'
+import { User } from '../models/user';
+import {SchemaContext} from '../models/main'
+
+const {useRealm,useObject,useQuery} = SchemaContext;
+
 
 GoogleSignin.configure({
     androidClientId: '1080041864924-p3fmbm7pl81odvup7cd01uvf2589umk1.apps.googleusercontent.com',
@@ -32,11 +31,16 @@ type user = {
 }
 
 const Login = ({ navigation }) => {
+
+    const realm = useRealm();
+
     const [username, setUsername] = useState<string>("");
-    const [passWord, setPassword] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
     const [showPassword, setShowPassword] = useState<boolean>(true)
+
     const [userInfo, setUserInfo ] = useState<user>()
     const {isConnected} = useNetInfo();
+  
     
     const googleSignIN = async() => {
         try {
@@ -70,20 +74,22 @@ const Login = ({ navigation }) => {
       };
 
 
-    //👇🏻 checks if the input field is empty
+
     const handleSignIn = async() => {
-        // check if use existing
-        const uniqId = uuid.v4()
-        if (username.trim()) {
-            navigation.navigate("Chat",{
-                username,
-                userID: uniqId,
-            });
-        } else {
-            Alert.alert("Username is required.");
+        
+       await firebaseAuthintication(username.trim(),password.trim())
+       .then(
+        (val)=>{
+            createuser(val.user)
         }
+       )
+       .catch(
+        (e)=> console.log(e)
+       )
     };
 
+
+    //firebase auth
     
     useMemo(()=>{
         if(isConnected == false ){
@@ -91,6 +97,22 @@ const Login = ({ navigation }) => {
         }
         console.log('cal use memo!')
     },[userInfo])
+
+
+    const createuser = useCallback(async(user)=>{
+        // console.log(user)
+        realm.write(()=>{
+            realm.create("User",{
+                _id: user.uid,
+                username: '',
+                userpass: '',
+                userphone: '',
+                usergmail: user.email,
+                userprofile: '',
+                time: new Date()
+            })
+        })
+    },[realm])
 
 
 
@@ -106,7 +128,7 @@ const Login = ({ navigation }) => {
                 >
                     <TextInput
                         autoCorrect={false}
-                        placeholder='User Name ...'
+                        placeholder='Email ...'
                         placeholderTextColor={'rgba(0,0,0,0.5)'}
                         className=' w-full px-3 rounded-xl border-[1px] border-black/5 text-slate-900 text-md tracking-wider'
                         onChangeText={(value) => setUsername(value)}
@@ -120,7 +142,7 @@ const Login = ({ navigation }) => {
                             secureTextEntry={showPassword}
                             className=' w-full px-3 rounded-xl border-[1px] border-black/5 text-slate-900 text-md tracking-wider'
                             onChangeText={(value) => setPassword(value)}
-                            value={passWord}
+                            value={password}
                             >
                         </TextInput>
                         <View className='absolute right-5'>
@@ -135,12 +157,6 @@ const Login = ({ navigation }) => {
                 >
                     {/* log in btn */}
                     <Text_Botton
-                        color={'bg-transparent'}
-                        func={()=>console.log('now click!')}
-                        textColor={'text-purple-950'}
-                        title={'Regester'}
-                    />
-                    <Text_Botton
                         color={'bg-green-200'}
                         func={handleSignIn}
                         textColor={'text-slate-900'}
@@ -149,7 +165,7 @@ const Login = ({ navigation }) => {
                     {/* Sign in btn */}
                 </View>
                 {/* google log in  */}
-                <View className='w-full mt-10'>
+                {/* <View className='w-full mt-10'>
                     <Text_Botton
                         color={'bg-transparent'}
                         func={googleSignIN}
@@ -162,8 +178,7 @@ const Login = ({ navigation }) => {
                         resizeMode="contain"
                     />
                     </Text_Botton>
-
-                </View>
+                </View> */}
                 {/* forgot password! */}
                 <View
                     className='absolute z-50 bottom-0  '
